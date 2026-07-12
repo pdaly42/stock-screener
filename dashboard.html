@@ -63,6 +63,8 @@
   .model-section { padding-bottom: 14px; border-bottom: 1px solid var(--border); }
   .model-description { margin-top: 8px; font-size: 0.8rem; color: var(--muted); max-width: 640px; line-height: 1.4; }
   .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+  .filter-row .clear-btn { margin-left: auto; }
+  .sector-row { width: 100%; }
   .control-group { display: flex; flex-direction: column; gap: 4px; }
   .control-group label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
   .control-group input[type="text"],
@@ -82,7 +84,7 @@
   }
   .model-toggle button.active { background: var(--header); color: white; border-color: var(--header); }
 
-  .sector-chips { display: flex; flex-wrap: wrap; gap: 6px; max-width: 480px; }
+  .sector-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .sector-chip {
     border: 1.5px solid var(--border); background: white; border-radius: 14px;
     padding: 4px 11px; font-size: 0.72rem; font-weight: 600; color: var(--muted);
@@ -174,11 +176,11 @@
         <label>Min F-Score</label>
         <input type="number" id="minFscore" min="0" max="9" value="0" style="min-width:70px">
       </div>
-      <div class="control-group" style="flex: 1; min-width: 260px;">
-        <label>Sectors</label>
-        <div class="sector-chips" id="sectorChips"></div>
-      </div>
       <button class="clear-btn" id="clearFilters">Clear filters</button>
+    </div>
+    <div class="control-group sector-row">
+      <label>Sectors</label>
+      <div class="sector-chips" id="sectorChips"></div>
     </div>
   </div>
 
