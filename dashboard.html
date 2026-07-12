@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Screener</title>
+<style>
+  :root {
+    --bg: #dbeafe;
+    --card: #ffffff;
+    --header: #0f172a;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--header);
+    color: white;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-title { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+  .header-subtitle { font-size: 0.75rem; color: #94a3b8; margin-top: 1px; }
+  .header-right { text-align: right; font-size: 0.75rem; color: #94a3b8; }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 24px 32px 60px; }
+
+  .summary-row {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .summary-card {
+    background: var(--card); border-radius: 10px; box-shadow: var(--shadow);
+    padding: 12px 18px; min-width: 130px;
+  }
+  .summary-card .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .summary-card .value { font-size: 1.35rem; font-weight: 700; margin-top: 2px; }
+
+  .controls {
+    background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
+    padding: 16px 20px; margin-bottom: 18px;
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+  }
+  .control-group { display: flex; flex-direction: column; gap: 4px; }
+  .control-group label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
+  .control-group input[type="text"],
+  .control-group input[type="number"],
+  .control-group select {
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px;
+    font-size: 0.85rem; font-family: inherit; color: var(--text); background: white;
+    min-width: 140px;
+  }
+  .control-group input:focus, .control-group select:focus { outline: none; border-color: var(--blue); }
+
+  .model-toggle { display: flex; gap: 6px; }
+  .model-toggle button {
+    border: 1.5px solid var(--border); background: white; border-radius: 8px;
+    padding: 7px 14px; font-size: 0.82rem; font-weight: 600; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .model-toggle button.active { background: var(--header); color: white; border-color: var(--header); }
+
+  .sector-chips { display: flex; flex-wrap: wrap; gap: 6px; max-width: 480px; }
+  .sector-chip {
+    border: 1.5px solid var(--border); background: white; border-radius: 14px;
+    padding: 4px 11px; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+    cursor: pointer; user-select: none; transition: all 0.15s; white-space: nowrap;
+  }
+  .sector-chip.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+  .clear-btn {
+    border: none; background: none; color: var(--blue); font-size: 0.8rem;
+    font-weight: 600; cursor: pointer; padding: 7px 4px;
+  }
+
+  .table-wrap {
+    background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead th {
+    text-align: left; padding: 10px 14px; font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted); font-weight: 700; border-bottom: 1.5px solid var(--border);
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  thead th:hover { color: var(--text); }
+  thead th.sorted { color: var(--blue); }
+  thead th .arrow { font-size: 0.65rem; margin-left: 3px; }
+  tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 9px 14px; white-space: nowrap; }
+  td.symbol { font-weight: 700; }
+  td.sector { color: var(--muted); font-size: 0.78rem; }
+  td.num { font-variant-numeric: tabular-nums; }
+  td.na { color: #cbd5e1; }
+
+  .badge {
+    display: inline-block; min-width: 30px; text-align: center; padding: 2px 8px;
+    border-radius: 12px; font-weight: 700; font-size: 0.78rem; font-variant-numeric: tabular-nums;
+  }
+  .badge.strong { background: #d1fae5; color: #047857; }
+  .badge.mid    { background: #fef3c7; color: #b45309; }
+  .badge.weak   { background: #fee2e2; color: #b91c1c; }
+
+  .detail-row td { background: #f8fafc; padding: 14px 20px; cursor: default; white-space: normal; }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .detail-block h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+  .signal-list { list-style: none; font-size: 0.8rem; }
+  .signal-list li { display: flex; justify-content: space-between; padding: 2px 0; }
+  .signal-list .yes { color: var(--green); font-weight: 700; }
+  .signal-list .no { color: var(--red); font-weight: 700; }
+  .metric-list { list-style: none; font-size: 0.8rem; }
+  .metric-list li { display: flex; justify-content: space-between; padding: 2px 0; }
+  .metric-list span.v { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .empty-state { padding: 60px 20px; text-align: center; color: var(--muted); }
+
+  footer { max-width: 1280px; margin: 0 auto; padding: 0 32px 40px; font-size: 0.72rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">Stock Screener</div>
+    <div class="header-subtitle" id="hdrSubtitle">Loading…</div>
+  </div>
+  <div class="header-right" id="hdrRight"></div>
+</header>
+
+<main>
+  <div class="summary-row" id="summaryRow"></div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Model</label>
+      <div class="model-toggle" id="modelToggle">
+        <button data-model="fscore" class="active">Piotroski F-Score</button>
+        <button data-model="magic">Magic Formula</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Ticker search</label>
+      <input type="text" id="searchInput" placeholder="e.g. AAPL">
+    </div>
+    <div class="control-group">
+      <label>Min F-Score</label>
+      <input type="number" id="minFscore" min="0" max="9" value="0" style="min-width:70px">
+    </div>
+    <div class="control-group" style="flex: 1; min-width: 260px;">
+      <label>Sectors</label>
+      <div class="sector-chips" id="sectorChips"></div>
+    </div>
+    <button class="clear-btn" id="clearFilters">Clear filters</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr id="tableHead"></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">No results match these filters.</div>
+  </div>
+</main>
+
+<footer id="footer"></footer>
+
+<script>
+const state = {
+  data: null,
+  model: 'fscore',           // 'fscore' | 'magic'
+  search: '',
+  minFscore: 0,
+  sectors: new Set(),        // empty set = all sectors
+  sortKey: null,
+  sortDir: 'desc',
+  expanded: null,            // symbol of currently expanded row
+};
+
+const COLUMNS = {
+  fscore: [
+    { key: 'symbol', label: 'Symbol' },
+    { key: 'sector', label: 'Sector' },
+    { key: 'fscore', label: 'F-Score' },
+    { key: 'roa', label: 'ROA' },
+    { key: 'gross_margin', label: 'Gross Margin' },
+    { key: 'current_ratio', label: 'Current Ratio' },
+    { key: 'leverage_ratio', label: 'Leverage' },
+    { key: 'asof', label: 'As Of' },
+  ],
+  magic: [
+    { key: 'symbol', label: 'Symbol' },
+    { key: 'sector', label: 'Sector' },
+    { key: 'magic_rank', label: 'Rank' },
+    { key: 'roc', label: 'ROC' },
+    { key: 'earnings_yield', label: 'Earnings Yield' },
+    { key: 'price', label: 'Price' },
+    { key: 'market_cap', label: 'Market Cap' },
+    { key: 'asof', label: 'As Of' },
+  ],
+};
+
+function fmtPct(v) { return v === null || v === undefined ? null : (v * 100).toFixed(1) + '%'; }
+function fmtNum(v, d = 2) { return v === null || v === undefined ? null : Number(v).toFixed(d); }
+function fmtMoney(v) {
+  if (v === null || v === undefined) return null;
+  const abs = Math.abs(v);
+  if (abs >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T';
+  if (abs >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+  return '$' + v.toFixed(0);
+}
+
+function rowValue(r, key) {
+  switch (key) {
+    case 'symbol': return r.symbol;
+    case 'sector': return r.sector || null;
+    case 'fscore': return r.fscore;
+    case 'roa': return r.f_metrics ? r.f_metrics.roa : null;
+    case 'gross_margin': return r.f_metrics ? r.f_metrics.gross_margin : null;
+    case 'current_ratio': return r.f_metrics ? r.f_metrics.current_ratio : null;
+    case 'leverage_ratio': return r.f_metrics ? r.f_metrics.leverage_ratio : null;
+    case 'magic_rank': return r.mf_metrics ? r.mf_metrics.magic_rank : null;
+    case 'roc': return r.mf_metrics ? r.mf_metrics.roc : null;
+    case 'earnings_yield': return r.mf_metrics ? r.mf_metrics.earnings_yield : null;
+    case 'price': return r.mf_metrics ? r.mf_metrics.price : null;
+    case 'market_cap': return r.mf_metrics ? r.mf_metrics.market_cap : null;
+    case 'asof':
+      if (state.model === 'fscore') return r.f_metrics ? r.f_metrics.asof : null;
+      return r.mf_metrics ? r.mf_metrics.asof : null;
+    default: return null;
+  }
+}
+
+function formatCell(key, v) {
+  if (v === null || v === undefined) return { text: '—', cls: 'na' };
+  switch (key) {
+    case 'symbol': return { text: v, cls: 'symbol' };
+    case 'sector': return { text: v, cls: 'sector' };
+    case 'fscore': return { html: fscoreBadge(v), cls: '' };
+    case 'roa': case 'gross_margin': case 'leverage_ratio': case 'roc': case 'earnings_yield':
+      return { text: fmtPct(v), cls: 'num' };
+    case 'current_ratio': return { text: fmtNum(v), cls: 'num' };
+    case 'price': return { text: '$' + fmtNum(v), cls: 'num' };
+    case 'market_cap': return { text: fmtMoney(v), cls: 'num' };
+    case 'magic_rank': return { text: '#' + v, cls: 'num' };
+    case 'asof': return { text: v, cls: 'num' };
+    default: return { text: String(v), cls: '' };
+  }
+}
+
+function fscoreBadge(score) {
+  const cls = score >= 7 ? 'strong' : score >= 4 ? 'mid' : 'weak';
+  return `<span class="badge ${cls}">${score}/9</span>`;
+}
+
+function applyFilters(results) {
+  return results.filter(r => {
+    if (state.model === 'fscore' && r.fscore === null) return false;
+    if (state.model === 'magic' && !r.mf_metrics) return false;
+    if (state.search && !r.symbol.includes(state.search.toUpperCase())) return false;
+    if (state.model === 'fscore' && r.fscore < state.minFscore) return false;
+    if (state.sectors.size > 0 && !state.sectors.has(r.sector)) return false;
+    return true;
+  });
+}
+
+function sortRows(rows) {
+  const key = state.sortKey || (state.model === 'fscore' ? 'fscore' : 'magic_rank');
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    let av = rowValue(a, key), bv = rowValue(b, key);
+    if (av === null && bv === null) return 0;
+    if (av === null) return 1;
+    if (bv === null) return -1;
+    if (typeof av === 'string') return dir * av.localeCompare(bv);
+    return dir * (av - bv);
+  });
+}
+
+function renderHead() {
+  const cols = COLUMNS[state.model];
+  const activeKey = state.sortKey || (state.model === 'fscore' ? 'fscore' : 'magic_rank');
+  const head = document.getElementById('tableHead');
+  head.innerHTML = cols.map(c => {
+    const sorted = c.key === activeKey;
+    const arrow = sorted ? (state.sortDir === 'asc' ? '&#9650;' : '&#9660;') : '';
+    return `<th data-key="${c.key}" class="${sorted ? 'sorted' : ''}">${c.label}<span class="arrow">${arrow}</span></th>`;
+  }).join('');
+  head.querySelectorAll('th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      if (state.sortKey === key) {
+        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sortKey = key;
+        state.sortDir = (key === 'magic_rank') ? 'asc' : 'desc';
+      }
+      render();
+    });
+  });
+}
+
+function renderBody(rows) {
+  const cols = COLUMNS[state.model];
+  const body = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  if (rows.length === 0) {
+    body.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  body.innerHTML = rows.map(r => {
+    const cells = cols.map(c => {
+      const v = rowValue(r, c.key);
+      const f = formatCell(c.key, v);
+      return `<td class="${f.cls}">${f.html || f.text}</td>`;
+    }).join('');
+    const row = `<tr data-symbol="${r.symbol}">${cells}</tr>`;
+    const detail = state.expanded === r.symbol ? `<tr class="detail-row"><td colspan="${cols.length}">${renderDetail(r)}</td></tr>` : '';
+    return row + detail;
+  }).join('');
+
+  body.querySelectorAll('tr[data-symbol]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const sym = tr.dataset.symbol;
+      state.expanded = state.expanded === sym ? null : sym;
+      render();
+    });
+  });
+}
+
+const SIGNAL_LABELS = {
+  positive_net_income: 'Positive net income',
+  positive_op_cash_flow: 'Positive op. cash flow',
+  roa_improving: 'ROA improving',
+  accruals_ok: 'Cash-backed earnings',
+  lower_leverage: 'Lower leverage',
+  higher_current_ratio: 'Higher current ratio',
+  no_new_shares: 'No new shares issued',
+  higher_gross_margin: 'Higher gross margin',
+  higher_asset_turnover: 'Higher asset turnover',
+};
+
+function renderDetail(r) {
+  let fBlock = '<div class="detail-block"><h4>F-Score signals</h4><div style="color:var(--muted);font-size:0.8rem;">not scored</div></div>';
+  if (r.f_signals) {
+    const items = Object.entries(r.f_signals).map(([k, v]) =>
+      `<li><span>${SIGNAL_LABELS[k] || k}</span><span class="${v ? 'yes' : 'no'}">${v ? 'YES' : 'no'}</span></li>`
+    ).join('');
+    fBlock = `<div class="detail-block"><h4>F-Score signals (${r.fscore}/9)</h4><ul class="signal-list">${items}</ul></div>`;
+  }
+
+  let mBlock = '<div class="detail-block"><h4>Magic Formula</h4><div style="color:var(--muted);font-size:0.8rem;">not ranked (excluded sector or missing data)</div></div>';
+  if (r.mf_metrics) {
+    const m = r.mf_metrics;
+    mBlock = `<div class="detail-block"><h4>Magic Formula (rank #${m.magic_rank})</h4><ul class="metric-list">
+      <li><span>Return on Capital</span><span class="v">${fmtPct(m.roc)}</span></li>
+      <li><span>Earnings Yield</span><span class="v">${fmtPct(m.earnings_yield)}</span></li>
+      <li><span>ROC rank</span><span class="v">#${m.roc_rank}</span></li>
+      <li><span>EY rank</span><span class="v">#${m.ey_rank}</span></li>
+      <li><span>EBIT</span><span class="v">${fmtMoney(m.ebit)}</span></li>
+      <li><span>Market cap</span><span class="v">${fmtMoney(m.market_cap)}</span></li>
+      <li><span>Enterprise value</span><span class="v">${fmtMoney(m.enterprise_value)}</span></li>
+      <li><span>Price</span><span class="v">$${fmtNum(m.price)}</span></li>
+    </ul></div>`;
+  }
+
+  return `<div class="detail-grid">${fBlock}${mBlock}</div>`;
+}
+
+function renderSummary() {
+  const d = state.data;
+  const row = document.getElementById('summaryRow');
+  row.innerHTML = `
+    <div class="summary-card"><div class="label">Universe</div><div class="value">${d.universe_size}</div></div>
+    <div class="summary-card"><div class="label">F-Score scored</div><div class="value">${d.scored_f_score}</div></div>
+    <div class="summary-card"><div class="label">Magic Formula scored</div><div class="value">${d.scored_magic_formula}</div></div>
+  `;
+}
+
+function renderSectorChips() {
+  const wrap = document.getElementById('sectorChips');
+  const sectors = [...new Set(state.data.results.map(r => r.sector).filter(Boolean))].sort();
+  wrap.innerHTML = sectors.map(s =>
+    `<div class="sector-chip ${state.sectors.has(s) ? 'active' : ''}" data-sector="${s}">${s}</div>`
+  ).join('');
+  wrap.querySelectorAll('.sector-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const s = chip.dataset.sector;
+      if (state.sectors.has(s)) state.sectors.delete(s); else state.sectors.add(s);
+      render();
+    });
+  });
+}
+
+function render() {
+  renderHead();
+  const filtered = applyFilters(state.data.results);
+  const sorted = sortRows(filtered);
+  renderBody(sorted);
+  renderSectorChips();
+}
+
+async function init() {
+  const resp = await fetch(`results.json?t=${Date.now()}`);
+  const data = await resp.json();
+  state.data = data;
+
+  document.getElementById('hdrSubtitle').textContent =
+    `Piotroski F-Score + Greenblatt Magic Formula — SEC EDGAR + Yahoo Finance`;
+  document.getElementById('hdrRight').textContent =
+    `Generated ${new Date(data.generated_at).toLocaleString()}`;
+  document.getElementById('footer').textContent =
+    `Data: ${data.data_source}. Fundamentals from SEC EDGAR XBRL filings; price from Yahoo Finance. Not investment advice.`;
+
+  renderSummary();
+
+  document.getElementById('modelToggle').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-model]');
+    if (!btn) return;
+    state.model = btn.dataset.model;
+    state.sortKey = null;
+    state.sortDir = state.model === 'magic' ? 'asc' : 'desc';
+    state.expanded = null;
+    document.querySelectorAll('#modelToggle button').forEach(b => b.classList.toggle('active', b === btn));
+    render();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', e => {
+    state.search = e.target.value.trim();
+    render();
+  });
+  document.getElementById('minFscore').addEventListener('input', e => {
+    state.minFscore = Number(e.target.value) || 0;
+    render();
+  });
+  document.getElementById('clearFilters').addEventListener('click', () => {
+    state.search = ''; state.minFscore = 0; state.sectors.clear();
+    document.getElementById('searchInput').value = '';
+    document.getElementById('minFscore').value = 0;
+    render();
+  });
+
+  render();
+}
+
+init();
+</script>
+</body>
+</html>

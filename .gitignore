@@ -1,0 +1,14 @@
+# Regenerable local cache -- large, and rebuilds from SEC EDGAR/Yahoo on next run
+screener_cache.db
+sec_ticker_map.json
+
+# Run logs
+sp500_run.log
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
