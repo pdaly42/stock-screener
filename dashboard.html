@@ -58,8 +58,11 @@
   .controls {
     background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
     padding: 16px 20px; margin-bottom: 18px;
-    display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+    display: flex; flex-direction: column; gap: 14px;
   }
+  .model-section { padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .model-description { margin-top: 8px; font-size: 0.8rem; color: var(--muted); max-width: 640px; line-height: 1.4; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
   .control-group { display: flex; flex-direction: column; gap: 4px; }
   .control-group label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
   .control-group input[type="text"],
@@ -152,26 +155,31 @@
   <div class="summary-row" id="summaryRow"></div>
 
   <div class="controls">
-    <div class="control-group">
-      <label>Model</label>
-      <div class="model-toggle" id="modelToggle">
-        <button data-model="fscore" class="active">Piotroski F-Score</button>
-        <button data-model="magic">Magic Formula</button>
+    <div class="model-section">
+      <div class="control-group">
+        <label>Model</label>
+        <div class="model-toggle" id="modelToggle">
+          <button data-model="fscore" class="active">Piotroski F-Score</button>
+          <button data-model="magic">Magic Formula</button>
+        </div>
       </div>
+      <p class="model-description" id="modelDescription"></p>
     </div>
-    <div class="control-group">
-      <label>Ticker search</label>
-      <input type="text" id="searchInput" placeholder="e.g. AAPL">
+    <div class="filter-row">
+      <div class="control-group">
+        <label>Ticker search</label>
+        <input type="text" id="searchInput" placeholder="e.g. AAPL">
+      </div>
+      <div class="control-group">
+        <label>Min F-Score</label>
+        <input type="number" id="minFscore" min="0" max="9" value="0" style="min-width:70px">
+      </div>
+      <div class="control-group" style="flex: 1; min-width: 260px;">
+        <label>Sectors</label>
+        <div class="sector-chips" id="sectorChips"></div>
+      </div>
+      <button class="clear-btn" id="clearFilters">Clear filters</button>
     </div>
-    <div class="control-group">
-      <label>Min F-Score</label>
-      <input type="number" id="minFscore" min="0" max="9" value="0" style="min-width:70px">
-    </div>
-    <div class="control-group" style="flex: 1; min-width: 260px;">
-      <label>Sectors</label>
-      <div class="sector-chips" id="sectorChips"></div>
-    </div>
-    <button class="clear-btn" id="clearFilters">Clear filters</button>
   </div>
 
   <div class="table-wrap">
@@ -195,6 +203,11 @@ const state = {
   sortKey: null,
   sortDir: 'desc',
   expanded: null,            // symbol of currently expanded row
+};
+
+const MODEL_DESCRIPTIONS = {
+  fscore: 'A 9-point checklist (Piotroski, 2000) that scores fundamentally improving companies across profitability, leverage/liquidity, and operating efficiency trends over 3 years — higher is stronger.',
+  magic: '(Greenblatt) Ranks companies by combining quality (Return on Capital) and cheapness (Earnings Yield) to surface good businesses trading at good prices — rank #1 is best.',
 };
 
 const COLUMNS = {
@@ -401,6 +414,10 @@ function renderSummary() {
   `;
 }
 
+function renderModelDescription() {
+  document.getElementById('modelDescription').textContent = MODEL_DESCRIPTIONS[state.model];
+}
+
 function renderSectorChips() {
   const wrap = document.getElementById('sectorChips');
   const sectors = [...new Set(state.data.results.map(r => r.sector).filter(Boolean))].sort();
@@ -417,6 +434,7 @@ function renderSectorChips() {
 }
 
 function render() {
+  renderModelDescription();
   renderHead();
   const filtered = applyFilters(state.data.results);
   const sorted = sortRows(filtered);
