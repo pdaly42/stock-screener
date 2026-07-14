@@ -194,6 +194,11 @@ XBRL_FIELD_SPECS = {
     # -- Magic Formula only, below --
     "ebit": (["OperatingIncomeLoss"], "USD", False),
     "ppe_net": (["PropertyPlantAndEquipmentNet"], "USD", True),
+    # Fallback source for ppe_net: some filers (e.g. GE Vernova) tag gross
+    # PP&E and accumulated depreciation separately instead of a combined
+    # "net" figure. Not in MAGIC_FORMULA_REQUIRED itself -- derived below.
+    "ppe_gross": (["PropertyPlantAndEquipmentGross"], "USD", True),
+    "accum_depreciation": (["AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment"], "USD", True),
     "cash": ([
         "CashAndCashEquivalentsAtCarryingValue",
         "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
@@ -228,7 +233,7 @@ REQUIRED_FIELDS = [
 # and current_debt default to 0 -- "no debt of that kind" -- if untagged).
 MAGIC_FORMULA_FIELDS = [
     "ebit", "current_assets", "current_liab", "long_term_debt",
-    "current_debt", "cash", "ppe_net", "shares",
+    "current_debt", "cash", "ppe_net", "ppe_gross", "accum_depreciation", "shares",
 ]
 MAGIC_FORMULA_REQUIRED = [
     "ebit", "current_assets", "current_liab", "cash", "ppe_net", "shares",
@@ -496,8 +501,11 @@ def extract_field(gaap, candidates, unit_key, instant):
     return matched_tags, {end: v for end, (_, _, v) in combined.items()}
 
 def normalize_from_facts(facts):
-    """Return a list of yearly dicts, newest first, for every fiscal-year-end
-    date where all REQUIRED_FIELDS have a value."""
+    """Return (years, reason). `years` is a list of yearly dicts, newest
+    first, for every fiscal-year-end date where all REQUIRED_FIELDS have a
+    value; `reason` is None on success or a human-readable explanation of
+    why `years` came up short (surfaced on the site so a skipped ticker
+    isn't just a silent absence)."""
     gaap = facts.get("facts", {}).get("us-gaap", {})
 
     series = {}
@@ -515,13 +523,18 @@ def normalize_from_facts(facts):
     }
     series["gross_profit"] = {**derived_gp, **series["gross_profit"]}
 
-    if any(not series[f] for f in REQUIRED_FIELDS):
-        return []
+    missing = [f for f in REQUIRED_FIELDS if not series[f]]
+    if missing:
+        return [], f"filer never reports: {', '.join(missing)}"
 
     common_dates = set(series[REQUIRED_FIELDS[0]])
     for f in REQUIRED_FIELDS[1:]:
         common_dates &= set(series[f])
     common_dates = sorted(common_dates, reverse=True)
+
+    if len(common_dates) < MIN_YEARS_REQUIRED:
+        return [], (f"only {len(common_dates)} fiscal year(s) with every required "
+                     f"field reported together (need {MIN_YEARS_REQUIRED})")
 
     years = []
     for d in common_dates:
@@ -537,13 +550,15 @@ def normalize_from_facts(facts):
             "long_term_debt": series["long_term_debt"].get(d, 0),   # 0 is a valid "no LT debt"
             "op_cash_flow":   series["op_cash_flow"][d],
         })
-    return years
+    return years, None
 
 def normalize_for_magic_formula(facts):
-    """Return the single most recent fiscal-year dict with everything Magic
-    Formula needs, or None. Unlike F-Score this only looks at the latest
-    year -- Magic Formula is a point-in-time cheapness/quality ranking, not
-    a multi-year trend, so there's no 3-year requirement here."""
+    """Return (year, reason). `year` is the single most recent fiscal-year
+    dict with everything Magic Formula needs, or None; `reason` is None on
+    success or a human-readable explanation otherwise. Unlike F-Score this
+    only looks at the latest year -- Magic Formula is a point-in-time
+    cheapness/quality ranking, not a multi-year trend, so there's no
+    3-year requirement here."""
     gaap = facts.get("facts", {}).get("us-gaap", {})
 
     series = {}
@@ -552,14 +567,24 @@ def normalize_for_magic_formula(facts):
         _, values = extract_field(gaap, candidates, unit_key, instant)
         series[field] = values
 
-    if any(not series[f] for f in MAGIC_FORMULA_REQUIRED):
-        return None
+    # Fall back to gross PP&E - accumulated depreciation where the filer
+    # doesn't tag a combined "net" figure directly (e.g. GE Vernova).
+    derived_ppe = {
+        d: series["ppe_gross"][d] - series["accum_depreciation"][d]
+        for d in series["ppe_gross"]
+        if d in series["accum_depreciation"] and d not in series["ppe_net"]
+    }
+    series["ppe_net"] = {**derived_ppe, **series["ppe_net"]}
+
+    missing = [f for f in MAGIC_FORMULA_REQUIRED if not series[f]]
+    if missing:
+        return None, f"filer never reports: {', '.join(missing)}"
 
     common_dates = set(series[MAGIC_FORMULA_REQUIRED[0]])
     for f in MAGIC_FORMULA_REQUIRED[1:]:
         common_dates &= set(series[f])
     if not common_dates:
-        return None
+        return None, "no single fiscal year has every required field reported together"
     d = max(common_dates)
 
     try:
@@ -567,10 +592,10 @@ def normalize_for_magic_formula(facts):
     except ValueError:
         age_days = None
     if age_days is not None and age_days > STALE_DATA_MAX_AGE_DAYS:
-        return None
+        return None, f"most recent complete year ({d}) is more than {STALE_DATA_MAX_AGE_DAYS} days old"
 
     if series["shares"][d] < MIN_PLAUSIBLE_SHARES:
-        return None
+        return None, "implausible share count (likely a filer tagging error, e.g. shares reported in millions)"
 
     return {
         "date":            d,
@@ -582,14 +607,15 @@ def normalize_for_magic_formula(facts):
         "cash":            series["cash"][d],
         "ppe_net":         series["ppe_net"][d],
         "shares":          series["shares"][d],
-    }
+    }, None
 
 def normalize_for_graham(facts):
-    """Return up to GRAHAM_EARNINGS_YEARS yearly dicts, newest first, for
-    Graham's Defensive Investor checklist. Unlike Magic Formula, Graham's
-    earnings-stability and dividend-record rules genuinely need multiple
-    years, so this keeps the full available window rather than collapsing
-    to one snapshot."""
+    """Return (years, reason). `years` is up to GRAHAM_EARNINGS_YEARS yearly
+    dicts, newest first, for Graham's Defensive Investor checklist; `reason`
+    is None on success (a full window) or a human-readable explanation
+    otherwise. Unlike Magic Formula, Graham's earnings-stability and
+    dividend-record rules genuinely need multiple years, so this keeps the
+    full available window rather than collapsing to one snapshot."""
     gaap = facts.get("facts", {}).get("us-gaap", {})
 
     series = {}
@@ -598,13 +624,20 @@ def normalize_for_graham(facts):
         _, values = extract_field(gaap, candidates, unit_key, instant)
         series[field] = values
 
-    if any(not series[f] for f in GRAHAM_REQUIRED):
-        return []
+    missing = [f for f in GRAHAM_REQUIRED if not series[f]]
+    if missing:
+        return [], f"filer never reports: {', '.join(missing)}"
 
     common_dates = set(series[GRAHAM_REQUIRED[0]])
     for f in GRAHAM_REQUIRED[1:]:
         common_dates &= set(series[f])
-    common_dates = sorted(common_dates, reverse=True)[:GRAHAM_EARNINGS_YEARS]
+    all_common_dates = sorted(common_dates, reverse=True)
+    common_dates = all_common_dates[:GRAHAM_EARNINGS_YEARS]
+
+    if len(common_dates) < GRAHAM_EARNINGS_YEARS:
+        return [], (f"only {len(common_dates)} fiscal year(s) with every required field "
+                     f"reported together (need {GRAHAM_EARNINGS_YEARS}) -- often a recent "
+                     f"IPO/spinoff, or a filer that changes which balance-sheet fields it tags")
 
     years = []
     for d in common_dates:
@@ -626,9 +659,9 @@ def normalize_for_graham(facts):
     # silently break the earnings-growth trend and moderate_pe/moderate_
     # valuation signals. Bail out entirely rather than score off it.
     if any(y["shares"] < MIN_PLAUSIBLE_SHARES for y in years):
-        return []
+        return [], "implausible share count in one or more years (likely a filer tagging error)"
 
-    return years
+    return years, None
 
 # ----------------------------------------------------------------------------
 # THE MODEL: Piotroski F-Score  (pure function -- no network, easy to test)
@@ -820,6 +853,18 @@ def compute_graham(years, price):
 # RUNNER
 # ----------------------------------------------------------------------------
 
+def _empty_row(symbol, sector, reason):
+    """A results.json row for a ticker that never got as far as fetching
+    financials (no CIK, or SEC fetch failed) -- still listed, with a reason,
+    so a ticker search on the site always explains an absence rather than
+    the row just not existing."""
+    return {
+        "symbol": symbol, "sector": sector, "universe_reason": reason,
+        "fscore": None, "f_signals": None, "f_metrics": None, "f_skip_reason": reason,
+        "mf_metrics": None, "mf_skip_reason": reason,
+        "graham_score": None, "graham_signals": None, "graham_metrics": None, "graham_skip_reason": reason,
+    }
+
 def screen(tickers, refresh=False):
     conn = init_db()
     cik_map = load_ticker_cik_map(refresh=refresh)
@@ -831,65 +876,80 @@ def screen(tickers, refresh=False):
         if not symbol:
             continue
 
+        sector = sector_map.get(symbol)
+
         cik = resolve_cik(cik_map, symbol)
         if cik is None:
+            reason = "no CIK found in SEC's ticker map (check the symbol, or a share-class dot/dash mismatch)"
             errors.append((symbol, "no_cik_found"))
-            print(f"  [{i}/{len(tickers)}] {symbol:6s}  SKIP  (no CIK found in SEC ticker map)")
+            results.append(_empty_row(symbol, sector, reason))
+            print(f"  [{i}/{len(tickers)}] {symbol:6s}  SKIP  ({reason})")
             continue
 
         try:
             facts = fetch_company_facts(conn, symbol, cik, refresh)
         except FetchError as e:
             errors.append((symbol, str(e)))
+            results.append(_empty_row(symbol, sector, str(e)))
             print(f"  [{i}/{len(tickers)}] {symbol:6s}  SKIP  ({e})")
             continue
 
-        sector = sector_map.get(symbol)
-
-        years = normalize_from_facts(facts)
+        years, years_reason = normalize_from_facts(facts)
         fscore, f_signals, f_metrics = compute_fscore(years)
+        f_skip_reason = None
         if fscore is None:
+            f_skip_reason = years_reason or f_signals
             f_signals, f_metrics = None, None
 
         # Price is shared by Magic Formula and Graham -- fetch once per
         # ticker rather than once per model (the cache would dedupe this
         # anyway within a run, but doing it once is simpler to reason about).
-        price = None
+        price, price_reason = None, None
         try:
             price = fetch_price(conn, symbol, refresh)
-        except FetchError:
-            price = None
+        except FetchError as e:
+            price_reason = str(e)
 
-        mf_metrics = None
-        if price is not None and sector not in MAGIC_FORMULA_EXCLUDED_SECTORS:
-            mf_year = normalize_for_magic_formula(facts)
-            if mf_year is not None:
-                mf_metrics, _ = compute_magic_formula_raw(mf_year, price)
+        mf_metrics, mf_skip_reason = None, None
+        if sector in MAGIC_FORMULA_EXCLUDED_SECTORS:
+            mf_skip_reason = f"{sector} sector excluded (Greenblatt's own methodology -- no clean 'invested capital' for these balance sheets)"
+        elif price is None:
+            mf_skip_reason = price_reason or "no price data available"
+        else:
+            mf_year, mf_year_reason = normalize_for_magic_formula(facts)
+            if mf_year is None:
+                mf_skip_reason = mf_year_reason
+            else:
+                mf_metrics, mf_skip_reason = compute_magic_formula_raw(mf_year, price)
 
-        graham_score, graham_signals, graham_metrics = None, None, None
-        if price is not None:
-            graham_years = normalize_for_graham(facts)
+        graham_score, graham_signals, graham_metrics, graham_skip_reason = None, None, None, None
+        if price is None:
+            graham_skip_reason = price_reason or "no price data available"
+        else:
+            graham_years, graham_years_reason = normalize_for_graham(facts)
             g_score, g_signals, g_metrics = compute_graham(graham_years, price)
-            if g_score is not None:
+            if g_score is None:
+                graham_skip_reason = graham_years_reason or g_signals
+            else:
                 graham_score, graham_signals, graham_metrics = g_score, g_signals, g_metrics
-
-        if fscore is None and mf_metrics is None and graham_score is None:
-            reason = f_signals if isinstance(f_signals, str) else "unscoreable"
-            errors.append((symbol, reason))
-            print(f"  [{i}/{len(tickers)}] {symbol:6s}  n/a   ({reason})")
-            continue
 
         results.append({
             "symbol": symbol,
             "sector": sector,
+            "universe_reason": None,
             "fscore": fscore,
             "f_signals": f_signals,
             "f_metrics": f_metrics,
+            "f_skip_reason": f_skip_reason,
             "mf_metrics": mf_metrics,
+            "mf_skip_reason": mf_skip_reason,
             "graham_score": graham_score,
             "graham_signals": graham_signals,
             "graham_metrics": graham_metrics,
+            "graham_skip_reason": graham_skip_reason,
         })
+        if fscore is None and mf_metrics is None and graham_score is None:
+            errors.append((symbol, f_skip_reason or "unscoreable"))
         fscore_disp = f"F={fscore}/9" if fscore is not None else "F=n/a"
         mf_disp = (f"ROC={mf_metrics['roc']:.1%} EY={mf_metrics['earnings_yield']:.1%}"
                    if mf_metrics else "MF=n/a")
@@ -917,7 +977,8 @@ def screen(tickers, refresh=False):
         "models": ["piotroski_f_score", "magic_formula", "graham_defensive"],
         "data_source": "sec_edgar_xbrl + yahoo_finance_price",
         "universe_size": len(tickers),
-        "scored": len(results),
+        "scored": sum(1 for r in results
+                      if r["fscore"] is not None or r["mf_metrics"] is not None or r["graham_score"] is not None),
         "scored_f_score": sum(1 for r in results if r["fscore"] is not None),
         "scored_magic_formula": len(mf_rows),
         "scored_graham": sum(1 for r in results if r["graham_score"] is not None),
@@ -969,21 +1030,21 @@ def inspect_ticker(symbol):
         return
 
     print("\n-- Magic Formula --")
-    mf_year = normalize_for_magic_formula(facts)
+    mf_year, mf_reason = normalize_for_magic_formula(facts)
     if mf_year is None:
-        print("insufficient fields for Magic Formula's latest year")
+        print(f"not scored: {mf_reason}")
     else:
         metrics, reason = compute_magic_formula_raw(mf_year, price)
-        print(f"unscoreable: {reason}" if metrics is None else f"price={price}  {metrics}")
+        print(f"not scored: {reason}" if metrics is None else f"price={price}  {metrics}")
 
     print("\n-- Graham Defensive Investor --")
-    graham_years = normalize_for_graham(facts)
+    graham_years, graham_years_reason = normalize_for_graham(facts)
     if len(graham_years) < GRAHAM_EARNINGS_YEARS:
-        print(f"insufficient years ({len(graham_years)}/{GRAHAM_EARNINGS_YEARS} needed)")
+        print(f"not scored: {graham_years_reason}")
     else:
         score, signals, metrics = compute_graham(graham_years, price)
         if score is None:
-            print(f"unscoreable: {signals}")
+            print(f"not scored: {signals}")
         else:
             print(f"price={price}  score={score}/7")
             for name, val in signals.items():

@@ -118,6 +118,7 @@
   td.sector { color: var(--muted); font-size: 0.78rem; }
   td.num { font-variant-numeric: tabular-nums; }
   td.na { color: #cbd5e1; }
+  td.skip-reason { color: var(--muted); font-size: 0.8rem; font-style: italic; white-space: normal; }
 
   .badge {
     display: inline-block; min-width: 30px; text-align: center; padding: 2px 8px;
@@ -320,14 +321,31 @@ function scoreBadge(score, max, strongMin, midMin) {
 
 const DEFAULT_SORT_KEY = { fscore: 'fscore', magic: 'magic_rank', graham: 'graham_score' };
 
+function isScored(r) {
+  if (state.model === 'fscore') return r.fscore !== null;
+  if (state.model === 'magic') return !!r.mf_metrics;
+  if (state.model === 'graham') return r.graham_score !== null;
+  return false;
+}
+
+function skipReasonFor(r) {
+  if (state.model === 'fscore') return r.f_skip_reason;
+  if (state.model === 'magic') return r.mf_skip_reason;
+  if (state.model === 'graham') return r.graham_skip_reason;
+  return null;
+}
+
 function applyFilters(results) {
+  const searching = state.search.length > 0;
   return results.filter(r => {
-    if (state.model === 'fscore' && r.fscore === null) return false;
-    if (state.model === 'magic' && !r.mf_metrics) return false;
-    if (state.model === 'graham' && r.graham_score === null) return false;
     if (state.search && !r.symbol.includes(state.search.toUpperCase())) return false;
-    if (state.model === 'fscore' && r.fscore < state.minScore) return false;
-    if (state.model === 'graham' && r.graham_score < state.minScore) return false;
+    // Browsing (no search): only show names the current model actually
+    // scored, so the ranked table doesn't fill up with dashes. Searching
+    // for a specific ticker: show it even if unscored, with the reason it
+    // wasn't -- an absent row with no explanation isn't useful.
+    if (!searching && !isScored(r)) return false;
+    if (state.model === 'fscore' && r.fscore !== null && r.fscore < state.minScore) return false;
+    if (state.model === 'graham' && r.graham_score !== null && r.graham_score < state.minScore) return false;
     if (state.sectors.size > 0 && !state.sectors.has(r.sector)) return false;
     return true;
   });
@@ -381,11 +399,20 @@ function renderBody(rows) {
   empty.style.display = 'none';
 
   body.innerHTML = rows.map(r => {
-    const cells = cols.map(c => {
-      const v = rowValue(r, c.key);
-      const f = formatCell(c.key, v);
-      return `<td class="${f.cls}">${f.html || f.text}</td>`;
-    }).join('');
+    let cells;
+    if (!isScored(r)) {
+      // Surfaced by an active ticker search even though this model didn't
+      // score it -- explain why inline instead of a row of dashes.
+      const reason = skipReasonFor(r) || 'not scored';
+      cells = `<td class="symbol">${r.symbol}</td><td class="sector">${r.sector || '—'}</td>` +
+              `<td colspan="${cols.length - 2}" class="skip-reason">Not scored — ${reason}</td>`;
+    } else {
+      cells = cols.map(c => {
+        const v = rowValue(r, c.key);
+        const f = formatCell(c.key, v);
+        return `<td class="${f.cls}">${f.html || f.text}</td>`;
+      }).join('');
+    }
     const row = `<tr data-symbol="${r.symbol}">${cells}</tr>`;
     const detail = state.expanded === r.symbol ? `<tr class="detail-row"><td colspan="${cols.length}">${renderDetail(r)}</td></tr>` : '';
     return row + detail;
@@ -423,7 +450,7 @@ const GRAHAM_SIGNAL_LABELS = {
 };
 
 function renderDetail(r) {
-  let fBlock = '<div class="detail-block"><h4>F-Score signals</h4><div style="color:var(--muted);font-size:0.8rem;">not scored</div></div>';
+  let fBlock = `<div class="detail-block"><h4>F-Score signals</h4><div style="color:var(--muted);font-size:0.8rem;">Not scored — ${r.f_skip_reason || 'unknown reason'}</div></div>`;
   if (r.f_signals) {
     const items = Object.entries(r.f_signals).map(([k, v]) =>
       `<li><span>${SIGNAL_LABELS[k] || k}</span><span class="${v ? 'yes' : 'no'}">${v ? 'YES' : 'no'}</span></li>`
@@ -431,7 +458,7 @@ function renderDetail(r) {
     fBlock = `<div class="detail-block"><h4>F-Score signals (${r.fscore}/9)</h4><ul class="signal-list">${items}</ul></div>`;
   }
 
-  let mBlock = '<div class="detail-block"><h4>Magic Formula</h4><div style="color:var(--muted);font-size:0.8rem;">not ranked (excluded sector or missing data)</div></div>';
+  let mBlock = `<div class="detail-block"><h4>Magic Formula</h4><div style="color:var(--muted);font-size:0.8rem;">Not scored — ${r.mf_skip_reason || 'unknown reason'}</div></div>`;
   if (r.mf_metrics) {
     const m = r.mf_metrics;
     mBlock = `<div class="detail-block"><h4>Magic Formula (rank #${m.magic_rank})</h4><ul class="metric-list">
@@ -446,7 +473,7 @@ function renderDetail(r) {
     </ul></div>`;
   }
 
-  let gBlock = '<div class="detail-block"><h4>Graham Defensive Investor</h4><div style="color:var(--muted);font-size:0.8rem;">not scored (insufficient history or missing data)</div></div>';
+  let gBlock = `<div class="detail-block"><h4>Graham Defensive Investor</h4><div style="color:var(--muted);font-size:0.8rem;">Not scored — ${r.graham_skip_reason || 'unknown reason'}</div></div>`;
   if (r.graham_signals) {
     const items = Object.entries(r.graham_signals).map(([k, v]) =>
       `<li><span>${GRAHAM_SIGNAL_LABELS[k] || k}</span><span class="${v ? 'yes' : 'no'}">${v ? 'YES' : 'no'}</span></li>`
