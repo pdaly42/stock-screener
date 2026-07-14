@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
 screener.py  --  stock screener: Piotroski F-Score + Greenblatt Magic Formula
+                  + Graham Defensive Investor
 
 WHAT THIS IS
 ------------
 Pulls annual financial statements for a list of tickers straight from SEC
 EDGAR's XBRL data (the same filings companies submit with their 10-Ks),
 caches them locally so re-runs are free, computes each company's Piotroski
-F-Score (a fully mechanical, 9-point quality signal) AND its Greenblatt
-Magic Formula rank (cheapness + quality via Return on Capital and Earnings
-Yield, which needs a current stock price on top of the XBRL fundamentals),
-and writes a ranked results.json that a webpage front end can read later.
+F-Score (a fully mechanical, 9-point quality signal), Greenblatt Magic
+Formula rank (cheapness + quality via Return on Capital and Earnings Yield),
+and Graham Defensive Investor score (Benjamin Graham's 7-point margin-of-
+safety checklist from The Intelligent Investor), then writes a ranked
+results.json that a webpage front end can read later.
 
 WHY PIOTROSKI FIRST
 -------------------
@@ -32,6 +34,23 @@ cap is an approximation. Financials and Utilities are excluded when a
 sector map is available (sp500_sectors.json from fetch_sp500.py) since
 Greenblatt excludes them too -- their balance sheets don't map cleanly onto
 "invested capital".
+
+WHY GRAHAM DEFENSIVE INVESTOR THIRD
+-------------------------------------
+Ben Graham -- "the father of value investing", who co-wrote Security
+Analysis (1934) and mentored Buffett directly -- laid out a 7-point
+checklist for defensive investors in The Intelligent Investor (1973 ed.,
+ch. 14): adequate size, a strong current ratio + low debt, a decade of
+positive earnings, two decades of uninterrupted dividends, earnings growth,
+a moderate P/E, and a moderate P/B (or the combined "Graham Number":
+P/E x P/B <= 22.5). Graham's original 10-year/20-year lookback windows are
+relaxed here (GRAHAM_EARNINGS_YEARS / GRAHAM_DIVIDEND_YEARS below) since SEC
+XBRL data reliably covers roughly a decade for most filers -- a strict
+20-year dividend check would disqualify almost the entire modern S&P 500
+(recent IPOs, any tech name, anyone who ever cut a dividend decades ago).
+This is a real, deliberate simplification, not an oversight -- it trades
+Graham's literal thresholds for something the data can actually support
+while keeping the spirit of each rule intact.
 
 WHY SEC EDGAR (not a paid data vendor)
 ---------------------------------------
@@ -110,6 +129,18 @@ YAHOO_CHART_URL_TMPL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbo
 SECTOR_MAP_CACHE = os.path.join(SCRIPT_DIR, "sp500_sectors.json")
 MAGIC_FORMULA_EXCLUDED_SECTORS = {"Financials", "Utilities"}
 
+# Graham's Defensive Investor checklist, relaxed lookback windows (see
+# "WHY GRAHAM DEFENSIVE INVESTOR THIRD" above for why 10yr/20yr don't fit
+# SEC XBRL's practical depth). Thresholds below are Graham's own numbers;
+# only the lookback windows are shortened.
+GRAHAM_EARNINGS_YEARS = 7        # relaxed from Graham's original 10
+GRAHAM_DIVIDEND_YEARS = 5        # relaxed from Graham's original 20
+GRAHAM_MIN_REVENUE = 250_000_000 # relaxed "adequate size" (Graham used ~$100M sales, 1970s dollars)
+GRAHAM_MAX_PE = 15               # rule 6: price <= 15x average earnings (last 3 yrs)
+GRAHAM_MAX_PB = 1.5              # rule 7: price <= 1.5x book value
+GRAHAM_MAX_GRAHAM_NUMBER = 22.5  # Graham's own shortcut: PE x PB <= 22.5 satisfies rules 6+7 together
+GRAHAM_MIN_EPS_GROWTH = 0.15     # relaxed from 33%/10yr given our shorter window
+
 # A small starter universe; swap in the full S&P 500 whenever you like --
 # there's no daily call budget to ration against with SEC EDGAR.
 DEFAULT_UNIVERSE = [
@@ -174,6 +205,16 @@ XBRL_FIELD_SPECS = {
         "ShortTermBorrowings",
         "NotesPayableCurrent",
     ], "USD", True),
+    # -- Graham Defensive Investor only, below --
+    "dividends_paid": ([
+        "PaymentsOfDividends",
+        "PaymentsOfDividendsCommonStock",
+        "PaymentsOfOrdinaryDividends",
+    ], "USD", False),
+    "stockholders_equity": ([
+        "StockholdersEquity",
+        "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+    ], "USD", True),
 }
 
 # Fields that must be present for every year we score; long_term_debt is
@@ -191,6 +232,19 @@ MAGIC_FORMULA_FIELDS = [
 ]
 MAGIC_FORMULA_REQUIRED = [
     "ebit", "current_assets", "current_liab", "cash", "ppe_net", "shares",
+]
+
+# Graham fields, and the subset required every year in the earnings window.
+# dividends_paid defaults to 0 (no dividend that year) if untagged, same
+# convention as long_term_debt/current_debt elsewhere -- absence of a
+# dividend payment tag legitimately means no dividend was paid.
+GRAHAM_FIELDS = [
+    "net_income", "shares", "revenue", "current_assets", "current_liab",
+    "long_term_debt", "stockholders_equity", "dividends_paid",
+]
+GRAHAM_REQUIRED = [
+    "net_income", "shares", "revenue", "current_assets", "current_liab",
+    "stockholders_equity",
 ]
 
 # Some filers' "shares" XBRL tag is reported pre-scaled to millions instead
@@ -530,6 +584,52 @@ def normalize_for_magic_formula(facts):
         "shares":          series["shares"][d],
     }
 
+def normalize_for_graham(facts):
+    """Return up to GRAHAM_EARNINGS_YEARS yearly dicts, newest first, for
+    Graham's Defensive Investor checklist. Unlike Magic Formula, Graham's
+    earnings-stability and dividend-record rules genuinely need multiple
+    years, so this keeps the full available window rather than collapsing
+    to one snapshot."""
+    gaap = facts.get("facts", {}).get("us-gaap", {})
+
+    series = {}
+    for field in GRAHAM_FIELDS:
+        candidates, unit_key, instant = XBRL_FIELD_SPECS[field]
+        _, values = extract_field(gaap, candidates, unit_key, instant)
+        series[field] = values
+
+    if any(not series[f] for f in GRAHAM_REQUIRED):
+        return []
+
+    common_dates = set(series[GRAHAM_REQUIRED[0]])
+    for f in GRAHAM_REQUIRED[1:]:
+        common_dates &= set(series[f])
+    common_dates = sorted(common_dates, reverse=True)[:GRAHAM_EARNINGS_YEARS]
+
+    years = []
+    for d in common_dates:
+        years.append({
+            "date":                d,
+            "net_income":          series["net_income"][d],
+            "shares":              series["shares"][d],
+            "revenue":             series["revenue"][d],
+            "current_assets":      series["current_assets"][d],
+            "current_liab":        series["current_liab"][d],
+            "long_term_debt":      series["long_term_debt"].get(d, 0),
+            "stockholders_equity": series["stockholders_equity"][d],
+            "dividends_paid":      series["dividends_paid"].get(d, 0),
+        })
+
+    # Same MIN_PLAUSIBLE_SHARES filer-tagging bug as Magic Formula (see
+    # above): if any year in the window has a corrupted share count, EPS
+    # and book-value-per-share are garbage for that year, which would
+    # silently break the earnings-growth trend and moderate_pe/moderate_
+    # valuation signals. Bail out entirely rather than score off it.
+    if any(y["shares"] < MIN_PLAUSIBLE_SHARES for y in years):
+        return []
+
+    return years
+
 # ----------------------------------------------------------------------------
 # THE MODEL: Piotroski F-Score  (pure function -- no network, easy to test)
 # ----------------------------------------------------------------------------
@@ -646,6 +746,77 @@ def compute_magic_formula_raw(year, price):
     }, None
 
 # ----------------------------------------------------------------------------
+# THE MODEL: Graham Defensive Investor  (pure function -- no network, easy to test)
+# ----------------------------------------------------------------------------
+# 7 binary signals, same spirit as Piotroski's checklist but aimed squarely
+# at valuation + margin of safety rather than fundamental trend. Score is
+# their sum (0-7); graham_pass (all 7) is Graham's original all-or-nothing
+# reading, but the 0-7 score is far more useful for sorting/filtering.
+# See GRAHAM_EARNINGS_YEARS/GRAHAM_DIVIDEND_YEARS above for the relaxed
+# lookback windows -- everything else follows Graham's own thresholds.
+
+def compute_graham(years, price):
+    """`years` = normalize_for_graham() output (newest first), `price` =
+    current share price. Returns (score, signals_dict, metrics_dict) or
+    (None, reason, {})."""
+    if len(years) < GRAHAM_EARNINGS_YEARS:
+        return None, "insufficient_years", {}
+
+    y0 = years[0]
+
+    try:
+        asof_age_days = (date.today() - date.fromisoformat(y0["date"])).days
+    except ValueError:
+        asof_age_days = None
+    if asof_age_days is not None and asof_age_days > STALE_DATA_MAX_AGE_DAYS:
+        return None, "stale_data", {}
+
+    current_ratio = _safe_div(y0["current_assets"], y0["current_liab"])
+    net_current_assets = y0["current_assets"] - y0["current_liab"]
+    book_value_per_share = _safe_div(y0["stockholders_equity"], y0["shares"])
+
+    earnings_window = years[:GRAHAM_EARNINGS_YEARS]
+    dividend_window = years[:GRAHAM_DIVIDEND_YEARS]
+
+    # Rule 6 uses "average earnings of the past three years"; growth (rule 5)
+    # compares that same recent 3-yr average against the earliest 3 years of
+    # the window (Graham's own recipe, just over our shorter span).
+    recent_eps = [_safe_div(y["net_income"], y["shares"]) for y in earnings_window[:3]]
+    early_eps = [_safe_div(y["net_income"], y["shares"]) for y in earnings_window[-3:]]
+    if any(v is None for v in recent_eps + early_eps) or book_value_per_share is None or current_ratio is None:
+        return None, "missing_fields", {}
+
+    avg_recent_eps = sum(recent_eps) / len(recent_eps)
+    avg_early_eps = sum(early_eps) / len(early_eps)
+    eps_growth = (avg_recent_eps - avg_early_eps) / abs(avg_early_eps) if avg_early_eps else None
+
+    pe = _safe_div(price, avg_recent_eps) if avg_recent_eps > 0 else None
+    pb = _safe_div(price, book_value_per_share) if book_value_per_share > 0 else None
+    graham_number = pe * pb if (pe is not None and pb is not None) else None
+
+    s = {}
+    s["adequate_size"]               = int(y0["revenue"] >= GRAHAM_MIN_REVENUE)
+    s["strong_financial_condition"]  = int(current_ratio >= 2 and y0["long_term_debt"] < net_current_assets)
+    s["earnings_stability"]          = int(all(y["net_income"] > 0 for y in earnings_window))
+    s["dividend_record"]             = int(all(y["dividends_paid"] > 0 for y in dividend_window))
+    s["earnings_growth"]             = int(eps_growth is not None and eps_growth >= GRAHAM_MIN_EPS_GROWTH)
+    s["moderate_pe"]                 = int(pe is not None and pe <= GRAHAM_MAX_PE)
+    s["moderate_valuation"]          = int(graham_number is not None and graham_number <= GRAHAM_MAX_GRAHAM_NUMBER)
+
+    score = sum(s.values())
+    metrics = {
+        "asof": y0["date"],
+        "current_ratio": round(current_ratio, 3),
+        "pe": round(pe, 2) if pe is not None else None,
+        "pb": round(pb, 2) if pb is not None else None,
+        "graham_number": round(graham_number, 2) if graham_number is not None else None,
+        "eps_growth": round(eps_growth, 4) if eps_growth is not None else None,
+        "earnings_years_checked": len(earnings_window),
+        "dividend_years_checked": len(dividend_window),
+    }
+    return score, s, metrics
+
+# ----------------------------------------------------------------------------
 # RUNNER
 # ----------------------------------------------------------------------------
 
@@ -680,18 +851,29 @@ def screen(tickers, refresh=False):
         if fscore is None:
             f_signals, f_metrics = None, None
 
+        # Price is shared by Magic Formula and Graham -- fetch once per
+        # ticker rather than once per model (the cache would dedupe this
+        # anyway within a run, but doing it once is simpler to reason about).
+        price = None
+        try:
+            price = fetch_price(conn, symbol, refresh)
+        except FetchError:
+            price = None
+
         mf_metrics = None
-        if sector not in MAGIC_FORMULA_EXCLUDED_SECTORS:
+        if price is not None and sector not in MAGIC_FORMULA_EXCLUDED_SECTORS:
             mf_year = normalize_for_magic_formula(facts)
             if mf_year is not None:
-                try:
-                    price = fetch_price(conn, symbol, refresh)
-                except FetchError:
-                    price = None
-                if price is not None:
-                    mf_metrics, _ = compute_magic_formula_raw(mf_year, price)
+                mf_metrics, _ = compute_magic_formula_raw(mf_year, price)
 
-        if fscore is None and mf_metrics is None:
+        graham_score, graham_signals, graham_metrics = None, None, None
+        if price is not None:
+            graham_years = normalize_for_graham(facts)
+            g_score, g_signals, g_metrics = compute_graham(graham_years, price)
+            if g_score is not None:
+                graham_score, graham_signals, graham_metrics = g_score, g_signals, g_metrics
+
+        if fscore is None and mf_metrics is None and graham_score is None:
             reason = f_signals if isinstance(f_signals, str) else "unscoreable"
             errors.append((symbol, reason))
             print(f"  [{i}/{len(tickers)}] {symbol:6s}  n/a   ({reason})")
@@ -704,11 +886,15 @@ def screen(tickers, refresh=False):
             "f_signals": f_signals,
             "f_metrics": f_metrics,
             "mf_metrics": mf_metrics,
+            "graham_score": graham_score,
+            "graham_signals": graham_signals,
+            "graham_metrics": graham_metrics,
         })
         fscore_disp = f"F={fscore}/9" if fscore is not None else "F=n/a"
         mf_disp = (f"ROC={mf_metrics['roc']:.1%} EY={mf_metrics['earnings_yield']:.1%}"
                    if mf_metrics else "MF=n/a")
-        print(f"  [{i}/{len(tickers)}] {symbol:6s}  {fscore_disp}   {mf_disp}")
+        graham_disp = f"G={graham_score}/7" if graham_score is not None else "G=n/a"
+        print(f"  [{i}/{len(tickers)}] {symbol:6s}  {fscore_disp}   {mf_disp}   {graham_disp}")
 
     # Magic Formula rank is relative to the rest of the scored universe, so
     # it's computed here, after every ticker's raw ROC/EY are in hand.
@@ -728,12 +914,13 @@ def screen(tickers, refresh=False):
 
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "models": ["piotroski_f_score", "magic_formula"],
+        "models": ["piotroski_f_score", "magic_formula", "graham_defensive"],
         "data_source": "sec_edgar_xbrl + yahoo_finance_price",
         "universe_size": len(tickers),
         "scored": len(results),
         "scored_f_score": sum(1 for r in results if r["fscore"] is not None),
         "scored_magic_formula": len(mf_rows),
+        "scored_graham": sum(1 for r in results if r["graham_score"] is not None),
         "results": results,
     }
     with open(RESULTS_JSON, "w") as f:
@@ -774,24 +961,36 @@ def inspect_ticker(symbol):
         for d, v in recent:
             print(f"    {d}: {v:,}")
 
+    try:
+        price = fetch_price(conn, symbol, refresh=True)
+    except FetchError as e:
+        print(f"\nprice fetch failed: {e}")
+        conn.close()
+        return
+
     print("\n-- Magic Formula --")
     mf_year = normalize_for_magic_formula(facts)
     if mf_year is None:
         print("insufficient fields for Magic Formula's latest year")
-        conn.close()
-        return
-    try:
-        price = fetch_price(conn, symbol, refresh=True)
-    except FetchError as e:
-        print(f"price fetch failed: {e}")
-        conn.close()
-        return
-    metrics, reason = compute_magic_formula_raw(mf_year, price)
-    conn.close()
-    if metrics is None:
-        print(f"unscoreable: {reason}")
     else:
-        print(f"price={price}  {metrics}")
+        metrics, reason = compute_magic_formula_raw(mf_year, price)
+        print(f"unscoreable: {reason}" if metrics is None else f"price={price}  {metrics}")
+
+    print("\n-- Graham Defensive Investor --")
+    graham_years = normalize_for_graham(facts)
+    if len(graham_years) < GRAHAM_EARNINGS_YEARS:
+        print(f"insufficient years ({len(graham_years)}/{GRAHAM_EARNINGS_YEARS} needed)")
+    else:
+        score, signals, metrics = compute_graham(graham_years, price)
+        if score is None:
+            print(f"unscoreable: {signals}")
+        else:
+            print(f"price={price}  score={score}/7")
+            for name, val in signals.items():
+                print(f"    {val}  {name}")
+            print(f"    metrics: {metrics}")
+
+    conn.close()
 
 # ----------------------------------------------------------------------------
 # SELF-TEST  (proves the scoring math -- no network, no XBRL parsing)
@@ -847,6 +1046,39 @@ def self_test_magic_formula():
     print("PASS: Magic Formula ROC/EY math is correct.")
     return True
 
+def self_test_graham():
+    """A hand-built 7-year company engineered to pass all 7 Graham signals,
+    no network needed. EPS grows from 1.00 to 2.00 across the window (recent
+    3yr avg ~1.90 vs early 3yr avg ~1.17 -> comfortably over the 15% growth
+    bar), current ratio is 3.0, no long-term debt, dividends paid every
+    year, and price is set so PE=10 exactly (Graham Number well under 22.5)."""
+    years = []
+    for i in range(7):
+        yr = 2025 - i
+        eps_path = [2.00, 1.90, 1.80, 1.50, 1.30, 1.20, 1.00]  # newest first
+        net_income = eps_path[i] * 100          # 100 shares outstanding
+        years.append({
+            "date": f"{yr}-12-31", "net_income": net_income, "shares": 100,
+            "revenue": 5_000_000_000, "current_assets": 600, "current_liab": 200,
+            "long_term_debt": 0, "stockholders_equity": 2000, "dividends_paid": 50,
+        })
+
+    avg_recent_eps = sum(eps_path[:3]) / 3   # 1.90
+    price = avg_recent_eps * 10              # PE = 10 exactly
+
+    score, signals, metrics = compute_graham(years, price)
+
+    print("\nSelf-test Graham Defensive Investor:")
+    for name, val in signals.items():
+        print(f"  {val}  {name}")
+    print(f"  ----> total Graham score = {score}/7")
+    print(f"  metrics: {metrics}")
+
+    assert score == 7, f"expected 7, got {score}"
+    assert all(v == 1 for v in signals.values()), "a signal did not fire as expected"
+    print("PASS: all 7 signals fired and the total is 7. Graham scoring engine is correct.")
+    return True
+
 # ----------------------------------------------------------------------------
 # CLI
 # ----------------------------------------------------------------------------
@@ -863,6 +1095,7 @@ def main():
     if args.self_test:
         self_test()
         self_test_magic_formula()
+        self_test_graham()
         return
 
     if args.inspect:
@@ -893,8 +1126,16 @@ def main():
         print(f"  #{m['magic_rank']:<4d}{r['symbol']:6s}  ROC={m['roc']:.1%}  EY={m['earnings_yield']:.1%}"
               f"   (as of {m['asof']})")
 
+    print(f"\n=== GRAHAM DEFENSIVE INVESTOR (score 7/7) ===")
+    for r in out["results"]:
+        if r["graham_score"] == 7:
+            m = r["graham_metrics"]
+            print(f"  {r['symbol']:6s}  G=7/7  PE={m['pe']}  PB={m['pb']}  "
+                  f"Graham#={m['graham_number']}   (as of {m['asof']})")
+
     print(f"\nScored {out['scored']}/{out['universe_size']} "
-          f"(F-Score: {out['scored_f_score']}, Magic Formula: {out['scored_magic_formula']}). "
+          f"(F-Score: {out['scored_f_score']}, Magic Formula: {out['scored_magic_formula']}, "
+          f"Graham: {out['scored_graham']}). "
           f"Wrote {RESULTS_JSON}. Skipped {len(errors)}.")
 
 if __name__ == "__main__":

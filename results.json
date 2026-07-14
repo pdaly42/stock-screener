@@ -1,14 +1,16 @@
 {
-  "generated_at": "2026-07-12T11:17:54.855320+00:00",
+  "generated_at": "2026-07-14T22:56:31.833238+00:00",
   "models": [
     "piotroski_f_score",
-    "magic_formula"
+    "magic_formula",
+    "graham_defensive"
   ],
   "data_source": "sec_edgar_xbrl + yahoo_finance_price",
   "universe_size": 503,
   "scored": 328,
   "scored_f_score": 283,
   "scored_magic_formula": 207,
+  "scored_graham": 22,
   "results": [
     {
       "symbol": "APP",
@@ -34,7 +36,10 @@
         "leverage_ratio": 0.4839,
         "asset_turnover": 0.934
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CBOE",
@@ -60,7 +65,10 @@
         "leverage_ratio": 0.1551,
         "asset_turnover": 0.605
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "COST",
@@ -89,14 +97,34 @@
       "mf_metrics": {
         "asof": "2025-08-31",
         "roc": 0.3129,
-        "earnings_yield": 0.026,
+        "earnings_yield": 0.0259,
         "ebit": 10383000000,
-        "price": 916.25,
-        "market_cap": 407550748750,
-        "enterprise_value": 399177748750,
-        "ey_rank": 149,
+        "price": 921.75,
+        "market_cap": 409997165250,
+        "enterprise_value": 401624165250,
+        "ey_rank": 150,
         "roc_rank": 131,
         "magic_rank": 163
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-08-31",
+        "current_ratio": 1.034,
+        "pe": 56.52,
+        "pb": 14.06,
+        "graham_number": 794.52,
+        "eps_growth": 0.7141,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -123,7 +151,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.812
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KLAC",
@@ -149,7 +180,10 @@
         "leverage_ratio": 0.3662,
         "asset_turnover": 0.788
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MNST",
@@ -178,15 +212,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4844,
-        "earnings_yield": 0.0258,
+        "earnings_yield": 0.0256,
         "ebit": 2419354000,
-        "price": 97.39,
-        "market_cap": 95875682890,
-        "enterprise_value": 93787565890,
+        "price": 98.005,
+        "market_cap": 96481120255,
+        "enterprise_value": 94393003255,
         "ey_rank": 151,
         "roc_rank": 84,
         "magic_rank": 137
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NDAQ",
@@ -212,7 +249,10 @@
         "leverage_ratio": 0.2761,
         "asset_turnover": 0.272
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PH",
@@ -241,15 +281,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 1.0686,
-        "earnings_yield": 0.0329,
+        "earnings_yield": 0.0328,
         "ebit": 4347000000,
-        "price": 961.27,
-        "market_cap": 125157354000,
-        "enterprise_value": 132198354000,
+        "price": 964.55,
+        "market_cap": 125584410000,
+        "enterprise_value": 132625410000,
         "ey_rank": 127,
         "roc_rank": 32,
         "magic_rank": 64
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PNR",
@@ -278,15 +321,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.8939,
-        "earnings_yield": 0.0606,
+        "earnings_yield": 0.061,
         "ebit": 857500000,
-        "price": 76.19,
-        "market_cap": 12609445000,
-        "enterprise_value": 14146445000,
-        "ey_rank": 45,
+        "price": 75.68,
+        "market_cap": 12525040000,
+        "enterprise_value": 14062040000,
+        "ey_rank": 42,
         "roc_rank": 39,
-        "magic_rank": 19
-      }
+        "magic_rank": 17
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PTC",
@@ -315,15 +361,18 @@
       "mf_metrics": {
         "asof": "2025-09-30",
         "roc": 4.7503,
-        "earnings_yield": 0.0611,
+        "earnings_yield": 0.0621,
         "ebit": 982385000,
-        "price": 124.74,
-        "market_cap": 15065722980,
-        "enterprise_value": 16078741980,
-        "ey_rank": 42,
+        "price": 122.51,
+        "market_cap": 14796390270,
+        "enterprise_value": 15809409270,
+        "ey_rank": 41,
         "roc_rank": 7,
-        "magic_rank": 9
-      }
+        "magic_rank": 8
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RCL",
@@ -352,15 +401,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1899,
-        "earnings_yield": 0.0497,
+        "earnings_yield": 0.0501,
         "ebit": 4910000000,
-        "price": 285.37,
-        "market_cap": 78191380000,
-        "enterprise_value": 98711380000,
-        "ey_rank": 72,
+        "price": 283.09,
+        "market_cap": 77566660000,
+        "enterprise_value": 98086660000,
+        "ey_rank": 73,
         "roc_rank": 155,
         "magic_rank": 131
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RMD",
@@ -389,15 +441,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 0.5549,
-        "earnings_yield": 0.0571,
+        "earnings_yield": 0.0604,
         "ebit": 1685363000,
-        "price": 203.87,
-        "market_cap": 30038205800,
-        "enterprise_value": 29497047800,
-        "ey_rank": 51,
+        "price": 193.01,
+        "market_cap": 28438093400,
+        "enterprise_value": 27896935400,
+        "ey_rank": 44,
         "roc_rank": 74,
-        "magic_rank": 40
-      }
+        "magic_rank": 35
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "STE",
@@ -426,15 +481,18 @@
       "mf_metrics": {
         "asof": "2026-03-31",
         "roc": 0.323,
-        "earnings_yield": 0.0483,
+        "earnings_yield": 0.0499,
         "ebit": 1101800000,
-        "price": 216.0,
-        "market_cap": 21319200000,
-        "enterprise_value": 22811300000,
-        "ey_rank": 79,
+        "price": 208.73,
+        "market_cap": 20601651000,
+        "enterprise_value": 22093751000,
+        "ey_rank": 74,
         "roc_rank": 125,
-        "magic_rank": 111
-      }
+        "magic_rank": 107
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WST",
@@ -460,7 +518,10 @@
         "leverage_ratio": 0.0475,
         "asset_turnover": 0.844
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AAPL",
@@ -491,12 +552,32 @@
         "roc": 4.1371,
         "earnings_yield": 0.0278,
         "ebit": 133050000000,
-        "price": 315.32,
-        "market_cap": 4731281058040,
-        "enterprise_value": 4786025058040,
+        "price": 314.86,
+        "market_cap": 4724378897420,
+        "enterprise_value": 4779122897420,
         "ey_rank": 147,
         "roc_rank": 9,
-        "magic_rank": 58
+        "magic_rank": 57
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-09-27",
+        "current_ratio": 0.893,
+        "pe": 47.99,
+        "pb": 64.07,
+        "graham_number": 3074.96,
+        "eps_growth": 0.6595,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -523,7 +604,10 @@
         "leverage_ratio": 0.4815,
         "asset_turnover": 0.452
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ADI",
@@ -552,15 +636,18 @@
       "mf_metrics": {
         "asof": "2025-11-01",
         "roc": 0.4085,
-        "earnings_yield": 0.0145,
+        "earnings_yield": 0.0146,
         "ebit": 2932496000,
-        "price": 395.65,
-        "market_cap": 196522915850,
-        "enterprise_value": 202168575850,
+        "price": 392.75,
+        "market_cap": 195082459750,
+        "enterprise_value": 200728119750,
         "ey_rank": 179,
         "roc_rank": 103,
         "magic_rank": 165
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ADP",
@@ -586,7 +673,10 @@
         "leverage_ratio": 0.0745,
         "asset_turnover": 0.378
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ADSK",
@@ -612,7 +702,10 @@
         "leverage_ratio": 0.2005,
         "asset_turnover": 0.665
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ALLE",
@@ -643,13 +736,16 @@
         "roc": 0.7951,
         "earnings_yield": 0.0639,
         "ebit": 859500000,
-        "price": 136.63,
-        "market_cap": 11832158000,
-        "enterprise_value": 13456058000,
-        "ey_rank": 36,
+        "price": 136.51,
+        "market_cap": 11821766000,
+        "enterprise_value": 13445666000,
+        "ey_rank": 37,
         "roc_rank": 44,
-        "magic_rank": 17
-      }
+        "magic_rank": 16
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AMD",
@@ -680,13 +776,16 @@
         "roc": 0.1865,
         "earnings_yield": 0.0041,
         "ebit": 3694000000,
-        "price": 557.89,
-        "market_cap": 912708040000,
-        "enterprise_value": 910391040000,
-        "ey_rank": 192,
+        "price": 548.13,
+        "market_cap": 896740680000,
+        "enterprise_value": 894423680000,
+        "ey_rank": 191,
         "roc_rank": 157,
         "magic_rank": 186
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AME",
@@ -717,13 +816,16 @@
         "roc": 1.8505,
         "earnings_yield": 0.0342,
         "ebit": 1910317000,
-        "price": 233.98,
-        "market_cap": 54109980820,
-        "enterprise_value": 55935338820,
+        "price": 233.96,
+        "market_cap": 54105355640,
+        "enterprise_value": 55930713640,
         "ey_rank": 123,
         "roc_rank": 14,
-        "magic_rank": 49
-      }
+        "magic_rank": 48
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "APTV",
@@ -752,15 +854,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1582,
-        "earnings_yield": 0.0621,
+        "earnings_yield": 0.0639,
         "ebit": 1184000000,
-        "price": 60.57,
-        "market_cap": 13370827500,
-        "enterprise_value": 19070827500,
-        "ey_rank": 39,
+        "price": 58.06,
+        "market_cap": 12816745000,
+        "enterprise_value": 18516745000,
+        "ey_rank": 38,
         "roc_rank": 164,
-        "magic_rank": 110
-      }
+        "magic_rank": 108
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BMY",
@@ -786,7 +891,10 @@
         "leverage_ratio": 0.4759,
         "asset_turnover": 0.52
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BR",
@@ -815,15 +923,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 9.4333,
-        "earnings_yield": 0.059,
+        "earnings_yield": 0.0595,
         "ebit": 1188600000,
-        "price": 147.47,
-        "market_cap": 17445701000,
-        "enterprise_value": 20136501000,
-        "ey_rank": 47,
+        "price": 146.02,
+        "market_cap": 17274166000,
+        "enterprise_value": 19964966000,
+        "ey_rank": 48,
         "roc_rank": 2,
-        "magic_rank": 8
-      }
+        "magic_rank": 9
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CF",
@@ -852,15 +963,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.261,
-        "earnings_yield": 0.1139,
+        "earnings_yield": 0.1118,
         "ebit": 2300000000,
-        "price": 116.92,
-        "market_cap": 18964424000,
-        "enterprise_value": 20197424000,
+        "price": 119.19,
+        "market_cap": 19332618000,
+        "enterprise_value": 20565618000,
         "ey_rank": 9,
         "roc_rank": 141,
-        "magic_rank": 54
-      }
+        "magic_rank": 55
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CTAS",
@@ -889,15 +1003,18 @@
       "mf_metrics": {
         "asof": "2025-05-31",
         "roc": 0.6851,
-        "earnings_yield": 0.0311,
+        "earnings_yield": 0.0303,
         "ebit": 2359726000,
-        "price": 179.64,
-        "market_cap": 73703777040,
-        "enterprise_value": 75864803040,
-        "ey_rank": 136,
+        "price": 184.33,
+        "market_cap": 75628018380,
+        "enterprise_value": 77789044380,
+        "ey_rank": 139,
         "roc_rank": 59,
-        "magic_rank": 100
-      }
+        "magic_rank": 103
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CTVA",
@@ -923,7 +1040,10 @@
         "leverage_ratio": 0.0394,
         "asset_turnover": 0.426
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DELL",
@@ -952,15 +1072,18 @@
       "mf_metrics": {
         "asof": "2026-01-30",
         "roc": 8.0763,
-        "earnings_yield": 0.0257,
+        "earnings_yield": 0.0245,
         "ebit": 8149000000,
-        "price": 434.97,
-        "market_cap": 297519480000,
-        "enterprise_value": 317494480000,
-        "ey_rank": 152,
+        "price": 457.54,
+        "market_cap": 312957360000,
+        "enterprise_value": 332932360000,
+        "ey_rank": 156,
         "roc_rank": 3,
-        "magic_rank": 57
-      }
+        "magic_rank": 62
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DLTR",
@@ -989,15 +1112,18 @@
       "mf_metrics": {
         "asof": "2026-01-31",
         "roc": 0.3193,
-        "earnings_yield": 0.0602,
+        "earnings_yield": 0.0603,
         "ebit": 1653100000,
-        "price": 124.91,
-        "market_cap": 25768933000,
-        "enterprise_value": 27482833000,
-        "ey_rank": 46,
+        "price": 124.56,
+        "market_cap": 25696728000,
+        "enterprise_value": 27410628000,
+        "ey_rank": 45,
         "roc_rank": 127,
-        "magic_rank": 74
-      }
+        "magic_rank": 75
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EQT",
@@ -1026,15 +1152,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.0986,
-        "earnings_yield": 0.086,
+        "earnings_yield": 0.0847,
         "ebit": 3249619000,
-        "price": 48.85,
-        "market_cap": 30077775450,
-        "enterprise_value": 37767308450,
+        "price": 49.81,
+        "market_cap": 30668863770,
+        "enterprise_value": 38358396770,
         "ey_rank": 16,
         "roc_rank": 186,
-        "magic_rank": 108
-      }
+        "magic_rank": 109
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FFIV",
@@ -1065,13 +1194,16 @@
         "roc": 0.7205,
         "earnings_yield": 0.032,
         "ebit": 765949000,
-        "price": 430.39,
-        "market_cap": 25257006760,
-        "enterprise_value": 23912733760,
-        "ey_rank": 131,
+        "price": 431.26,
+        "market_cap": 25308061840,
+        "enterprise_value": 23963788840,
+        "ey_rank": 132,
         "roc_rank": 51,
         "magic_rank": 86
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FLEX",
@@ -1100,15 +1232,18 @@
       "mf_metrics": {
         "asof": "2026-03-31",
         "roc": 0.2006,
-        "earnings_yield": 0.026,
+        "earnings_yield": 0.0266,
         "ebit": 1368000000,
-        "price": 135.8,
-        "market_cap": 51332400000,
-        "enterprise_value": 52694400000,
-        "ey_rank": 150,
+        "price": 132.24,
+        "market_cap": 49986720000,
+        "enterprise_value": 51348720000,
+        "ey_rank": 149,
         "roc_rank": 151,
-        "magic_rank": 172
-      }
+        "magic_rank": 171
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FSLR",
@@ -1137,15 +1272,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.169,
-        "earnings_yield": 0.0719,
+        "earnings_yield": 0.0746,
         "ebit": 1596864000,
-        "price": 227.83,
-        "market_cap": 24500154710,
-        "enterprise_value": 22195212710,
-        "ey_rank": 25,
+        "price": 220.58,
+        "market_cap": 23720511460,
+        "enterprise_value": 21415569460,
+        "ey_rank": 24,
         "roc_rank": 161,
-        "magic_rank": 89
-      }
+        "magic_rank": 88
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GILD",
@@ -1174,15 +1312,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.8259,
-        "earnings_yield": 0.0556,
+        "earnings_yield": 0.0555,
         "ebit": 10022000000,
-        "price": 129.83,
-        "market_cap": 162936650000,
-        "enterprise_value": 180308650000,
-        "ey_rank": 53,
+        "price": 130.04,
+        "market_cap": 163200200000,
+        "enterprise_value": 180572200000,
+        "ey_rank": 58,
         "roc_rank": 42,
-        "magic_rank": 23
-      }
+        "magic_rank": 24
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GOOG",
@@ -1211,15 +1352,18 @@
       "mf_metrics": {
         "asof": "2024-12-31",
         "roc": 0.4576,
-        "earnings_yield": 0.0255,
+        "earnings_yield": 0.0253,
         "ebit": 112390000000,
-        "price": 355.03,
-        "market_cap": 4419058410000,
-        "enterprise_value": 4407474410000,
-        "ey_rank": 153,
+        "price": 357.33,
+        "market_cap": 4447686510000,
+        "enterprise_value": 4436102510000,
+        "ey_rank": 152,
         "roc_rank": 92,
         "magic_rank": 144
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GOOGL",
@@ -1248,15 +1392,18 @@
       "mf_metrics": {
         "asof": "2024-12-31",
         "roc": 0.4576,
-        "earnings_yield": 0.0253,
+        "earnings_yield": 0.0252,
         "ebit": 112390000000,
-        "price": 357.18,
-        "market_cap": 4445819460000,
-        "enterprise_value": 4434235460000,
-        "ey_rank": 154,
+        "price": 359.51,
+        "market_cap": 4474820970000,
+        "enterprise_value": 4463236970000,
+        "ey_rank": 153,
         "roc_rank": 93,
-        "magic_rank": 147
-      }
+        "magic_rank": 146
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IDXX",
@@ -1285,15 +1432,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.3434,
-        "earnings_yield": 0.0296,
+        "earnings_yield": 0.0309,
         "ebit": 1360031000,
-        "price": 563.57,
-        "market_cap": 45663259250,
-        "enterprise_value": 45933026250,
-        "ey_rank": 142,
+        "price": 540.68,
+        "market_cap": 43808597000,
+        "enterprise_value": 44078364000,
+        "ey_rank": 137,
         "roc_rank": 22,
-        "magic_rank": 69
-      }
+        "magic_rank": 63
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "INCY",
@@ -1322,15 +1472,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3573,
-        "earnings_yield": 0.0745,
+        "earnings_yield": 0.0759,
         "ebit": 1514859000,
-        "price": 116.71,
-        "market_cap": 23423697000,
-        "enterprise_value": 20325880000,
-        "ey_rank": 23,
+        "price": 114.88,
+        "market_cap": 23056416000,
+        "enterprise_value": 19958599000,
+        "ey_rank": 22,
         "roc_rank": 116,
         "magic_rank": 50
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LDOS",
@@ -1356,7 +1509,10 @@
         "leverage_ratio": 0.343,
         "asset_turnover": 1.315
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LRCX",
@@ -1385,15 +1541,18 @@
       "mf_metrics": {
         "asof": "2025-06-29",
         "roc": 0.5699,
-        "earnings_yield": 0.0131,
+        "earnings_yield": 0.0133,
         "ebit": 5900968000,
-        "price": 350.33,
-        "market_cap": 451975446860,
-        "enterprise_value": 450054151860,
+        "price": 346.1,
+        "market_cap": 446518146200,
+        "enterprise_value": 444596851200,
         "ey_rank": 181,
         "roc_rank": 71,
-        "magic_rank": 151
-      }
+        "magic_rank": 149
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MAS",
@@ -1419,7 +1578,10 @@
         "leverage_ratio": 0.5662,
         "asset_turnover": 1.508
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MCO",
@@ -1445,7 +1607,10 @@
         "leverage_ratio": 0.4418,
         "asset_turnover": 0.498
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MOS",
@@ -1474,15 +1639,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.0539,
-        "earnings_yield": 0.0709,
+        "earnings_yield": 0.0682,
         "ebit": 821500000,
-        "price": 21.51,
-        "market_cap": 6859539000,
-        "enterprise_value": 11593739000,
-        "ey_rank": 26,
+        "price": 22.94,
+        "market_cap": 7315566000,
+        "enterprise_value": 12049766000,
+        "ey_rank": 30,
         "roc_rank": 190,
-        "magic_rank": 122
-      }
+        "magic_rank": 126
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MPC",
@@ -1508,7 +1676,10 @@
         "leverage_ratio": 0.3633,
         "asset_turnover": 1.683
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MTD",
@@ -1534,7 +1705,10 @@
         "leverage_ratio": 0.5625,
         "asset_turnover": 1.243
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PM",
@@ -1560,7 +1734,10 @@
         "leverage_ratio": 0.6524,
         "asset_turnover": 0.658
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RL",
@@ -1589,15 +1766,18 @@
       "mf_metrics": {
         "asof": "2026-03-28",
         "roc": 0.3766,
-        "earnings_yield": 0.0494,
+        "earnings_yield": 0.053,
         "ebit": 1179200000,
-        "price": 394.9,
-        "market_cap": 24602270000,
-        "enterprise_value": 23853170000,
-        "ey_rank": 74,
+        "price": 368.97,
+        "market_cap": 22986831000,
+        "enterprise_value": 22237731000,
+        "ey_rank": 62,
         "roc_rank": 108,
-        "magic_rank": 87
-      }
+        "magic_rank": 73
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RSG",
@@ -1623,7 +1803,10 @@
         "leverage_ratio": 0.3989,
         "asset_turnover": 0.512
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TJX",
@@ -1649,7 +1832,10 @@
         "leverage_ratio": 0.0523,
         "asset_turnover": 1.902
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VMC",
@@ -1675,7 +1861,10 @@
         "leverage_ratio": 0.2612,
         "asset_turnover": 0.464
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VRSN",
@@ -1701,7 +1890,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 1.178
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WMT",
@@ -1732,12 +1924,32 @@
         "roc": 0.2628,
         "earnings_yield": 0.0317,
         "ebit": 29825000000,
-        "price": 113.9,
-        "market_cap": 913705800000,
-        "enterprise_value": 941144800000,
-        "ey_rank": 134,
+        "price": 113.7,
+        "market_cap": 912101400000,
+        "enterprise_value": 939540400000,
+        "ey_rank": 133,
         "roc_rank": 140,
         "magic_rank": 160
+      },
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 0,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2026-01-31",
+        "current_ratio": 0.79,
+        "pe": 48.4,
+        "pb": 9.16,
+        "graham_number": 443.17,
+        "eps_growth": -0.3903,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -1764,7 +1976,10 @@
         "leverage_ratio": 0.5846,
         "asset_turnover": 0.665
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ADBE",
@@ -1793,14 +2008,34 @@
       "mf_metrics": {
         "asof": "2025-11-28",
         "roc": 4.7418,
-        "earnings_yield": 0.0904,
+        "earnings_yield": 0.0916,
         "ebit": 8706000000,
-        "price": 223.64,
-        "market_cap": 95494280000,
-        "enterprise_value": 96273280000,
-        "ey_rank": 15,
+        "price": 220.78,
+        "market_cap": 94273060000,
+        "enterprise_value": 95052060000,
+        "ey_rank": 13,
         "roc_rank": 8,
-        "magic_rank": 3
+        "magic_rank": 1
+      },
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 0,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-11-28",
+        "current_ratio": 0.996,
+        "pe": 16.2,
+        "pb": 8.11,
+        "graham_number": 131.4,
+        "eps_growth": 0.522,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -1830,15 +2065,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7909,
-        "earnings_yield": 0.0375,
+        "earnings_yield": 0.0381,
         "ebit": 9080000000,
-        "price": 363.39,
-        "market_cap": 196957380000,
-        "enterprise_value": 242432380000,
+        "price": 355.25,
+        "market_cap": 192545500000,
+        "enterprise_value": 238020500000,
         "ey_rank": 113,
         "roc_rank": 45,
         "magic_rank": 61
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AOS",
@@ -1867,15 +2105,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6847,
-        "earnings_yield": 0.0851,
+        "earnings_yield": 0.0845,
         "ebit": 728600000,
-        "price": 60.44,
-        "market_cap": 8577332930,
-        "enterprise_value": 8557832930,
+        "price": 60.87,
+        "market_cap": 8638356311,
+        "enterprise_value": 8618856311,
         "ey_rank": 17,
         "roc_rank": 60,
-        "magic_rank": 15
-      }
+        "magic_rank": 14
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "APH",
@@ -1904,15 +2145,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3721,
-        "earnings_yield": 0.0284,
+        "earnings_yield": 0.0285,
         "ebit": 5868600000,
-        "price": 159.06,
-        "market_cap": 203199150000,
-        "enterprise_value": 206633350000,
+        "price": 158.37,
+        "market_cap": 202317675000,
+        "enterprise_value": 205751875000,
         "ey_rank": 145,
         "roc_rank": 111,
-        "magic_rank": 154
-      }
+        "magic_rank": 153
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AVGO",
@@ -1941,15 +2185,18 @@
       "mf_metrics": {
         "asof": "2025-11-02",
         "roc": 1.6347,
-        "earnings_yield": 0.0128,
+        "earnings_yield": 0.0132,
         "ebit": 25484000000,
-        "price": 399.97,
-        "market_cap": 1941054410000,
-        "enterprise_value": 1990012410000,
+        "price": 389.11,
+        "market_cap": 1888350830000,
+        "enterprise_value": 1937308830000,
         "ey_rank": 182,
         "roc_rank": 15,
-        "magic_rank": 103
-      }
+        "magic_rank": 101
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BBY",
@@ -1978,15 +2225,18 @@
       "mf_metrics": {
         "asof": "2026-01-31",
         "roc": 0.4941,
-        "earnings_yield": 0.0818,
+        "earnings_yield": 0.0806,
         "ebit": 1389000000,
-        "price": 82.8,
-        "market_cap": 17561880000,
-        "enterprise_value": 16988880000,
-        "ey_rank": 21,
+        "price": 83.98,
+        "market_cap": 17812158000,
+        "enterprise_value": 17239158000,
+        "ey_rank": 20,
         "roc_rank": 81,
-        "magic_rank": 26
-      }
+        "magic_rank": 25
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BSX",
@@ -2015,15 +2265,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4888,
-        "earnings_yield": 0.0473,
+        "earnings_yield": 0.0494,
         "ebit": 3613000000,
-        "price": 44.77,
-        "market_cap": 66908765000,
-        "enterprise_value": 76379765000,
-        "ey_rank": 83,
+        "price": 42.63,
+        "market_cap": 63710535000,
+        "enterprise_value": 73181535000,
+        "ey_rank": 77,
         "roc_rank": 83,
-        "magic_rank": 70
-      }
+        "magic_rank": 67
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CAT",
@@ -2052,14 +2305,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3589,
-        "earnings_yield": 0.0234,
+        "earnings_yield": 0.0239,
         "ebit": 11151000000,
-        "price": 952.41,
-        "market_cap": 449823243000,
-        "enterprise_value": 476053243000,
-        "ey_rank": 159,
+        "price": 933.34,
+        "market_cap": 440816482000,
+        "enterprise_value": 467046482000,
+        "ey_rank": 158,
         "roc_rank": 114,
         "magic_rank": 158
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 1.436,
+        "pe": 45.93,
+        "pb": 20.68,
+        "graham_number": 949.7,
+        "eps_growth": 1.1735,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -2089,15 +2362,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7904,
-        "earnings_yield": 0.0388,
+        "earnings_yield": 0.0405,
         "ebit": 1753000000,
-        "price": 139.53,
-        "market_cap": 41963862516,
-        "enterprise_value": 45220862516,
-        "ey_rank": 110,
+        "price": 133.13,
+        "market_cap": 40039052653,
+        "enterprise_value": 43296052653,
+        "ey_rank": 104,
         "roc_rank": 46,
-        "magic_rank": 59
-      }
+        "magic_rank": 54
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CCL",
@@ -2126,15 +2402,18 @@
       "mf_metrics": {
         "asof": "2025-11-30",
         "roc": 0.1295,
-        "earnings_yield": 0.0719,
+        "earnings_yield": 0.0725,
         "ebit": 4483000000,
-        "price": 26.83,
-        "market_cap": 37615660000,
-        "enterprise_value": 62327660000,
-        "ey_rank": 24,
+        "price": 26.5,
+        "market_cap": 37153000000,
+        "enterprise_value": 61865000000,
+        "ey_rank": 25,
         "roc_rank": 172,
-        "magic_rank": 101
-      }
+        "magic_rank": 102
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CI",
@@ -2160,7 +2439,10 @@
         "leverage_ratio": 0.1955,
         "asset_turnover": 1.764
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CIEN",
@@ -2186,7 +2468,10 @@
         "leverage_ratio": 0.2599,
         "asset_turnover": 0.845
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CLX",
@@ -2212,7 +2497,10 @@
         "leverage_ratio": 0.4467,
         "asset_turnover": 1.235
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CMI",
@@ -2243,13 +2531,16 @@
         "roc": 0.282,
         "earnings_yield": 0.0412,
         "ebit": 4025000000,
-        "price": 675.95,
-        "market_cap": 93754265000,
-        "enterprise_value": 97795265000,
+        "price": 675.54,
+        "market_cap": 93697398000,
+        "enterprise_value": 97738398000,
         "ey_rank": 99,
         "roc_rank": 136,
         "magic_rank": 136
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "COHR",
@@ -2275,7 +2566,10 @@
         "leverage_ratio": 0.2346,
         "asset_turnover": 0.401
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "COR",
@@ -2301,7 +2595,10 @@
         "leverage_ratio": 0.0985,
         "asset_turnover": 4.789
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CRH",
@@ -2330,15 +2627,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.173,
-        "earnings_yield": 0.0645,
+        "earnings_yield": 0.0649,
         "ebit": 5440000000,
-        "price": 104.71,
-        "market_cap": 70888670000,
-        "enterprise_value": 84325670000,
-        "ey_rank": 35,
+        "price": 103.91,
+        "market_cap": 70347070000,
+        "enterprise_value": 83784070000,
+        "ey_rank": 34,
         "roc_rank": 158,
-        "magic_rank": 99
-      }
+        "magic_rank": 97
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CRM",
@@ -2364,7 +2664,27 @@
         "leverage_ratio": 0.093,
         "asset_turnover": 0.403
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 0,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2026-01-31",
+        "current_ratio": 0.76,
+        "pe": 27.37,
+        "pb": 2.71,
+        "graham_number": 74.13,
+        "eps_growth": 2.0563,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
+      }
     },
     {
       "symbol": "CVS",
@@ -2390,7 +2710,10 @@
         "leverage_ratio": 0.2386,
         "asset_turnover": 1.588
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DG",
@@ -2419,15 +2742,18 @@
       "mf_metrics": {
         "asof": "2025-01-31",
         "roc": 0.2284,
-        "earnings_yield": 0.0554,
+        "earnings_yield": 0.0549,
         "ebit": 1714074000,
-        "price": 118.92,
-        "market_cap": 26165610840,
-        "enterprise_value": 30952059840,
-        "ey_rank": 54,
+        "price": 120.14,
+        "market_cap": 26434043780,
+        "enterprise_value": 31220492780,
+        "ey_rank": 59,
         "roc_rank": 144,
-        "magic_rank": 104
-      }
+        "magic_rank": 111
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DHR",
@@ -2461,10 +2787,13 @@
         "price": 199.05,
         "market_cap": 142539705000,
         "enterprise_value": 156342705000,
-        "ey_rank": 140,
+        "ey_rank": 141,
         "roc_rank": 104,
-        "magic_rank": 143
-      }
+        "magic_rank": 145
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DPZ",
@@ -2493,15 +2822,18 @@
       "mf_metrics": {
         "asof": "2025-12-28",
         "roc": 1.4099,
-        "earnings_yield": 0.0941,
+        "earnings_yield": 0.0909,
         "ebit": 953974000,
-        "price": 299.46,
-        "market_cap": 10252805471,
-        "enterprise_value": 10141830471,
-        "ey_rank": 12,
+        "price": 309.85,
+        "market_cap": 10608534613,
+        "enterprise_value": 10497559613,
+        "ey_rank": 14,
         "roc_rank": 19,
         "magic_rank": 4
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DXCM",
@@ -2527,7 +2859,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.719
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FAST",
@@ -2556,15 +2891,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4258,
-        "earnings_yield": 0.031,
+        "earnings_yield": 0.0316,
         "ebit": 1655700000,
-        "price": 46.49,
-        "market_cap": 53479037144,
-        "enterprise_value": 53327237144,
-        "ey_rank": 137,
+        "price": 45.74,
+        "market_cap": 52616286491,
+        "enterprise_value": 52464486491,
+        "ey_rank": 135,
         "roc_rank": 101,
         "magic_rank": 138
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FDS",
@@ -2590,7 +2928,10 @@
         "leverage_ratio": 0.3179,
         "asset_turnover": 0.573
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FICO",
@@ -2616,7 +2957,10 @@
         "leverage_ratio": 1.4218,
         "asset_turnover": 1.159
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FIX",
@@ -2645,15 +2989,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.19,
-        "earnings_yield": 0.0214,
+        "earnings_yield": 0.0212,
         "ebit": 1314589000,
-        "price": 1756.09,
-        "market_cap": 62188415170,
-        "enterprise_value": 61351743170,
+        "price": 1775.1,
+        "market_cap": 62861616300,
+        "enterprise_value": 62024944300,
         "ey_rank": 164,
         "roc_rank": 28,
-        "magic_rank": 97
-      }
+        "magic_rank": 98
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GEN",
@@ -2679,7 +3026,10 @@
         "leverage_ratio": 0.5141,
         "asset_turnover": 0.323
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GLW",
@@ -2708,15 +3058,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1257,
-        "earnings_yield": 0.0132,
+        "earnings_yield": 0.0134,
         "ebit": 2279000000,
-        "price": 190.89,
-        "market_cap": 166265190000,
-        "enterprise_value": 173173190000,
+        "price": 187.64,
+        "market_cap": 163434440000,
+        "enterprise_value": 170342440000,
         "ey_rank": 180,
         "roc_rank": 173,
         "magic_rank": 187
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HUBB",
@@ -2745,15 +3098,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6275,
-        "earnings_yield": 0.043,
+        "earnings_yield": 0.0436,
         "ebit": 1208800000,
-        "price": 490.94,
-        "market_cap": 26265290000,
-        "enterprise_value": 28108190000,
-        "ey_rank": 91,
+        "price": 483.89,
+        "market_cap": 25888115000,
+        "enterprise_value": 27731015000,
+        "ey_rank": 90,
         "roc_rank": 67,
-        "magic_rank": 62
-      }
+        "magic_rank": 59
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IBM",
@@ -2779,7 +3135,10 @@
         "leverage_ratio": 0.361,
         "asset_turnover": 0.492
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IEX",
@@ -2808,15 +3167,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4553,
-        "earnings_yield": 0.0389,
+        "earnings_yield": 0.0388,
         "ebit": 699300000,
-        "price": 222.16,
-        "market_cap": 16728648000,
-        "enterprise_value": 17969448000,
-        "ey_rank": 108,
+        "price": 222.74,
+        "market_cap": 16772322000,
+        "enterprise_value": 18013122000,
+        "ey_rank": 110,
         "roc_rank": 94,
-        "magic_rank": 109
-      }
+        "magic_rank": 112
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ITW",
@@ -2845,15 +3207,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.276,
-        "earnings_yield": 0.0494,
+        "earnings_yield": 0.0488,
         "ebit": 4216000000,
-        "price": 268.81,
-        "market_cap": 78573163000,
-        "enterprise_value": 85404163000,
-        "ey_rank": 73,
+        "price": 272.28,
+        "market_cap": 79587444000,
+        "enterprise_value": 86418444000,
+        "ey_rank": 79,
         "roc_rank": 24,
-        "magic_rank": 25
-      }
+        "magic_rank": 26
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "J",
@@ -2882,15 +3247,18 @@
       "mf_metrics": {
         "asof": "2025-09-26",
         "roc": 0.6541,
-        "earnings_yield": 0.0528,
+        "earnings_yield": 0.0515,
         "ebit": 863634000,
-        "price": 125.83,
-        "market_cap": 15342703560,
-        "enterprise_value": 16343711560,
-        "ey_rank": 62,
+        "price": 129.26,
+        "market_cap": 15760930320,
+        "enterprise_value": 16761938320,
+        "ey_rank": 64,
         "roc_rank": 64,
-        "magic_rank": 41
-      }
+        "magic_rank": 43
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KDP",
@@ -2919,15 +3287,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 17.3544,
-        "earnings_yield": 0.0638,
+        "earnings_yield": 0.066,
         "ebit": 3575000000,
-        "price": 31.67,
-        "market_cap": 43159876000,
-        "enterprise_value": 56064876000,
-        "ey_rank": 37,
+        "price": 30.26,
+        "market_cap": 41238328000,
+        "enterprise_value": 54143328000,
+        "ey_rank": 33,
         "roc_rank": 1,
         "magic_rank": 5
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KO",
@@ -2956,14 +3327,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7103,
-        "earnings_yield": 0.0351,
+        "earnings_yield": 0.0353,
         "ebit": 13762000000,
-        "price": 83.49,
-        "market_cap": 360092370000,
-        "enterprise_value": 391941370000,
-        "ey_rank": 121,
+        "price": 83.08,
+        "market_cap": 358324040000,
+        "enterprise_value": 390173040000,
+        "ey_rank": 122,
         "roc_rank": 54,
-        "magic_rank": 76
+        "magic_rank": 78
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 1.459,
+        "pe": 31.28,
+        "pb": 11.14,
+        "graham_number": 348.38,
+        "eps_growth": 0.304,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -2993,15 +3384,18 @@
       "mf_metrics": {
         "asof": "2025-12-28",
         "roc": 1.2291,
-        "earnings_yield": 0.0649,
+        "earnings_yield": 0.0675,
         "ebit": 2414000000,
-        "price": 19.48,
-        "market_cap": 37479520000,
-        "enterprise_value": 37167520000,
-        "ey_rank": 34,
+        "price": 18.76,
+        "market_cap": 36094240000,
+        "enterprise_value": 35782240000,
+        "ey_rank": 31,
         "roc_rank": 27,
-        "magic_rank": 12
-      }
+        "magic_rank": 11
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LH",
@@ -3030,15 +3424,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3236,
-        "earnings_yield": 0.049,
+        "earnings_yield": 0.0492,
         "ebit": 1384700000,
-        "price": 276.81,
-        "market_cap": 23196678000,
-        "enterprise_value": 28249078000,
-        "ey_rank": 75,
+        "price": 275.68,
+        "market_cap": 23101984000,
+        "enterprise_value": 28154384000,
+        "ey_rank": 78,
         "roc_rank": 124,
-        "magic_rank": 106
-      }
+        "magic_rank": 110
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LITE",
@@ -3064,7 +3461,10 @@
         "leverage_ratio": 0.6074,
         "asset_turnover": 0.418
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LLY",
@@ -3090,7 +3490,10 @@
         "leverage_ratio": 0.3633,
         "asset_turnover": 0.828
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LNT",
@@ -3116,7 +3519,10 @@
         "leverage_ratio": 0.4383,
         "asset_turnover": 0.192
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MDT",
@@ -3145,15 +3551,18 @@
       "mf_metrics": {
         "asof": "2026-04-24",
         "roc": 0.3148,
-        "earnings_yield": 0.0482,
+        "earnings_yield": 0.0505,
         "ebit": 6467000000,
-        "price": 83.87,
-        "market_cap": 108032947000,
-        "enterprise_value": 134044947000,
-        "ey_rank": 80,
+        "price": 79.3,
+        "market_cap": 102146330000,
+        "enterprise_value": 128158330000,
+        "ey_rank": 69,
         "roc_rank": 130,
-        "magic_rank": 114
-      }
+        "magic_rank": 106
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MLM",
@@ -3182,15 +3591,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1142,
-        "earnings_yield": 0.0357,
+        "earnings_yield": 0.0359,
         "ebit": 1437000000,
-        "price": 577.72,
-        "market_cap": 35009832000,
-        "enterprise_value": 40265832000,
-        "ey_rank": 119,
+        "price": 573.75,
+        "market_cap": 34769250000,
+        "enterprise_value": 40025250000,
+        "ey_rank": 120,
         "roc_rank": 181,
-        "magic_rank": 171
-      }
+        "magic_rank": 172
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MO",
@@ -3216,7 +3628,10 @@
         "leverage_ratio": 0.6894,
         "asset_turnover": 0.662
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MRVL",
@@ -3245,15 +3660,18 @@
       "mf_metrics": {
         "asof": "2026-01-31",
         "roc": 0.3169,
-        "earnings_yield": 0.0064,
+        "earnings_yield": 0.0068,
         "ebit": 1322900000,
-        "price": 235.81,
-        "market_cap": 205083957000,
-        "enterprise_value": 206915757000,
+        "price": 222.44,
+        "market_cap": 193456068000,
+        "enterprise_value": 195287868000,
         "ey_rank": 189,
         "roc_rank": 129,
-        "magic_rank": 181
-      }
+        "magic_rank": 180
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MU",
@@ -3279,7 +3697,10 @@
         "leverage_ratio": 0.1393,
         "asset_turnover": 0.538
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NCLH",
@@ -3308,15 +3729,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1058,
-        "earnings_yield": 0.0682,
+        "earnings_yield": 0.0684,
         "ebit": 1560868000,
-        "price": 19.61,
-        "market_cap": 9368526719,
-        "enterprise_value": 22888910719,
-        "ey_rank": 30,
+        "price": 19.46,
+        "market_cap": 9296865372,
+        "enterprise_value": 22817249372,
+        "ey_rank": 29,
         "roc_rank": 184,
         "magic_rank": 120
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NFLX",
@@ -3345,15 +3769,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 3.2957,
-        "earnings_yield": 0.0411,
+        "earnings_yield": 0.041,
         "ebit": 13326603000,
-        "price": 73.37,
-        "market_cap": 318709228310,
-        "enterprise_value": 324138383310,
+        "price": 73.53,
+        "market_cap": 319404246390,
+        "enterprise_value": 324833401390,
         "ey_rank": 101,
         "roc_rank": 10,
         "magic_rank": 31
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ORLY",
@@ -3382,15 +3809,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.8189,
-        "earnings_yield": 0.0434,
+        "earnings_yield": 0.0437,
         "ebit": 3460612000,
-        "price": 86.28,
-        "market_cap": 73848691320,
-        "enterprise_value": 79671802320,
-        "ey_rank": 90,
+        "price": 85.75,
+        "market_cap": 73395054250,
+        "enterprise_value": 79218165250,
+        "ey_rank": 89,
         "roc_rank": 43,
-        "magic_rank": 47
-      }
+        "magic_rank": 46
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PLTR",
@@ -3419,15 +3849,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1955,
-        "earnings_yield": 0.0044,
+        "earnings_yield": 0.0041,
         "ebit": 1414015000,
-        "price": 126.79,
-        "market_cap": 325241327630,
-        "enterprise_value": 323817531630,
-        "ey_rank": 191,
+        "price": 133.72,
+        "market_cap": 343018142840,
+        "enterprise_value": 341594346840,
+        "ey_rank": 192,
         "roc_rank": 154,
-        "magic_rank": 184
-      }
+        "magic_rank": 185
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PODD",
@@ -3453,7 +3886,10 @@
         "leverage_ratio": 0.2918,
         "asset_turnover": 0.877
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PPG",
@@ -3479,7 +3915,10 @@
         "leverage_ratio": 0.2988,
         "asset_turnover": 0.817
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PSX",
@@ -3505,7 +3944,10 @@
         "leverage_ratio": 0.2535,
         "asset_turnover": 1.824
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ROK",
@@ -3534,15 +3976,18 @@
       "mf_metrics": {
         "asof": "2025-09-30",
         "roc": 1.3484,
-        "earnings_yield": 0.0307,
+        "earnings_yield": 0.0308,
         "ebit": 1703000000,
-        "price": 472.12,
-        "market_cap": 53396772000,
-        "enterprise_value": 55544772000,
+        "price": 469.77,
+        "market_cap": 53130987000,
+        "enterprise_value": 55278987000,
         "ey_rank": 138,
         "roc_rank": 21,
         "magic_rank": 65
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SBAC",
@@ -3571,15 +4016,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.897,
-        "earnings_yield": 0.0406,
+        "earnings_yield": 0.041,
         "ebit": 1342786000,
-        "price": 190.03,
-        "market_cap": 20434495990,
-        "enterprise_value": 33070195990,
-        "ey_rank": 104,
+        "price": 187.25,
+        "market_cap": 20135554250,
+        "enterprise_value": 32771254250,
+        "ey_rank": 102,
         "roc_rank": 38,
-        "magic_rank": 52
-      }
+        "magic_rank": 51
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SPGI",
@@ -3605,7 +4053,10 @@
         "leverage_ratio": 0.2021,
         "asset_turnover": 0.255
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "STX",
@@ -3634,15 +4085,18 @@
       "mf_metrics": {
         "asof": "2025-06-27",
         "roc": 0.71,
-        "earnings_yield": 0.0094,
+        "earnings_yield": 0.0097,
         "ebit": 1890000000,
-        "price": 910.34,
-        "market_cap": 197543780000,
-        "enterprise_value": 201647780000,
+        "price": 878.31,
+        "market_cap": 190593270000,
+        "enterprise_value": 194697270000,
         "ey_rank": 186,
         "roc_rank": 55,
         "magic_rank": 141
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SWK",
@@ -3668,7 +4122,10 @@
         "leverage_ratio": 0.2214,
         "asset_turnover": 0.693
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TDY",
@@ -3697,15 +4154,18 @@
       "mf_metrics": {
         "asof": "2025-12-28",
         "roc": 0.5651,
-        "earnings_yield": 0.0357,
+        "earnings_yield": 0.0363,
         "ebit": 1149800000,
-        "price": 634.6,
-        "market_cap": 30080040000,
-        "enterprise_value": 32203040000,
-        "ey_rank": 120,
+        "price": 623.1,
+        "market_cap": 29534940000,
+        "enterprise_value": 31657940000,
+        "ey_rank": 119,
         "roc_rank": 72,
-        "magic_rank": 98
-      }
+        "magic_rank": 96
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TRGP",
@@ -3734,15 +4194,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1721,
-        "earnings_yield": 0.0435,
+        "earnings_yield": 0.0425,
         "ebit": 3331200000,
-        "price": 273.35,
-        "market_cap": 59289615000,
-        "enterprise_value": 76556015000,
-        "ey_rank": 89,
+        "price": 281.6,
+        "market_cap": 61079040000,
+        "enterprise_value": 78345440000,
+        "ey_rank": 95,
         "roc_rank": 159,
-        "magic_rank": 148
-      }
+        "magic_rank": 152
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TTWO",
@@ -3768,7 +4231,10 @@
         "leverage_ratio": 0.2652,
         "asset_turnover": 0.725
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "UNH",
@@ -3794,7 +4260,27 @@
         "leverage_ratio": 0.2336,
         "asset_turnover": 1.501
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 0,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 0.788,
+        "pe": 24.25,
+        "pb": 3.87,
+        "graham_number": 93.85,
+        "eps_growth": 0.086,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
+      }
     },
     {
       "symbol": "VRSK",
@@ -3820,7 +4306,10 @@
         "leverage_ratio": 0.7705,
         "asset_turnover": 0.72
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VRTX",
@@ -3846,7 +4335,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.533
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WAB",
@@ -3872,7 +4364,10 @@
         "leverage_ratio": 0.1944,
         "asset_turnover": 0.597
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "XYL",
@@ -3898,7 +4393,10 @@
         "leverage_ratio": 0.0798,
         "asset_turnover": 0.548
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ABNB",
@@ -3927,15 +4425,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4841,
-        "earnings_yield": 0.0289,
+        "earnings_yield": 0.0293,
         "ebit": 2544000000,
-        "price": 148.62,
-        "market_cap": 92590260000,
-        "enterprise_value": 88029260000,
+        "price": 146.54,
+        "market_cap": 91294420000,
+        "enterprise_value": 86733420000,
         "ey_rank": 144,
         "roc_rank": 85,
         "magic_rank": 132
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ABT",
@@ -3964,15 +4465,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3778,
-        "earnings_yield": 0.0478,
+        "earnings_yield": 0.0504,
         "ebit": 8053000000,
-        "price": 93.93,
-        "market_cap": 164189640000,
-        "enterprise_value": 168596640000,
-        "ey_rank": 81,
+        "price": 88.96,
+        "market_cap": 155502080000,
+        "enterprise_value": 159909080000,
+        "ey_rank": 70,
         "roc_rank": 107,
-        "magic_rank": 91
-      }
+        "magic_rank": 80
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ADM",
@@ -3998,7 +4502,10 @@
         "leverage_ratio": 0.1261,
         "asset_turnover": 0.468
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AKAM",
@@ -4029,13 +4536,16 @@
         "roc": 0.1552,
         "earnings_yield": 0.0322,
         "ebit": 566944000,
-        "price": 126.19,
-        "market_cap": 18552832370,
-        "enterprise_value": 17622601370,
+        "price": 126.11,
+        "market_cap": 18541070530,
+        "enterprise_value": 17610839530,
         "ey_rank": 130,
         "roc_rank": 165,
         "magic_rank": 169
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ALB",
@@ -4061,7 +4571,10 @@
         "leverage_ratio": 0.1905,
         "asset_turnover": 0.31
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AMAT",
@@ -4090,15 +4603,18 @@
       "mf_metrics": {
         "asof": "2025-10-26",
         "roc": 0.4739,
-        "earnings_yield": 0.0171,
+        "earnings_yield": 0.0172,
         "ebit": 8289000000,
-        "price": 602.5,
-        "market_cap": 486820000000,
-        "enterprise_value": 486034000000,
-        "ey_rank": 173,
+        "price": 595.7,
+        "market_cap": 481325600000,
+        "enterprise_value": 480539600000,
+        "ey_rank": 172,
         "roc_rank": 88,
-        "magic_rank": 156
-      }
+        "magic_rank": 155
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AMCR",
@@ -4124,7 +4640,10 @@
         "leverage_ratio": 0.3734,
         "asset_turnover": 0.908
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AMZN",
@@ -4153,14 +4672,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2173,
-        "earnings_yield": 0.0303,
+        "earnings_yield": 0.0301,
         "ebit": 79975000000,
-        "price": 245.34,
-        "market_cap": 2656296180000,
-        "enterprise_value": 2637882180000,
-        "ey_rank": 139,
+        "price": 247.49,
+        "market_cap": 2679574230000,
+        "enterprise_value": 2661160230000,
+        "ey_rank": 140,
         "roc_rank": 148,
         "magic_rank": 166
+      },
+      "graham_score": 1,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 0,
+        "dividend_record": 0,
+        "earnings_growth": 0,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 1.051,
+        "pe": 47.59,
+        "pb": 6.52,
+        "graham_number": 310.25,
+        "eps_growth": -0.4492,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -4190,15 +4729,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": -0.0241,
-        "earnings_yield": -0.0013,
+        "earnings_yield": -0.0014,
         "ebit": -62076000,
-        "price": 565.8,
-        "market_cap": 46604946000,
-        "enterprise_value": 47214521000,
+        "price": 547.26,
+        "market_cap": 45077806200,
+        "enterprise_value": 45687381200,
         "ey_rank": 197,
         "roc_rank": 197,
         "magic_rank": 197
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AZO",
@@ -4227,15 +4769,18 @@
       "mf_metrics": {
         "asof": "2025-08-30",
         "roc": 0.6135,
-        "earnings_yield": 0.0587,
+        "earnings_yield": 0.0594,
         "ebit": 3610156000,
-        "price": 3072.64,
-        "market_cap": 52987676800,
-        "enterprise_value": 61515648800,
-        "ey_rank": 49,
+        "price": 3032.07,
+        "market_cap": 52288047150,
+        "enterprise_value": 60816019150,
+        "ey_rank": 50,
         "roc_rank": 68,
-        "magic_rank": 32
-      }
+        "magic_rank": 33
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BA",
@@ -4264,15 +4809,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1199,
-        "earnings_yield": 0.0194,
+        "earnings_yield": 0.0197,
         "ebit": 4281000000,
-        "price": 222.28,
-        "market_cap": 169444044000,
-        "enterprise_value": 220832044000,
+        "price": 217.11,
+        "market_cap": 165502953000,
+        "enterprise_value": 216890953000,
         "ey_rank": 168,
         "roc_rank": 178,
-        "magic_rank": 185
-      }
+        "magic_rank": 184
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BF.B",
@@ -4298,7 +4846,10 @@
         "leverage_ratio": 0.2639,
         "asset_turnover": 0.486
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CAH",
@@ -4327,15 +4878,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 6.8114,
-        "earnings_yield": 0.0372,
+        "earnings_yield": 0.0381,
         "ebit": 2275000000,
-        "price": 235.8,
-        "market_cap": 57063600000,
-        "enterprise_value": 61166600000,
+        "price": 230.11,
+        "market_cap": 55686620000,
+        "enterprise_value": 59789620000,
         "ey_rank": 114,
         "roc_rank": 4,
-        "magic_rank": 33
-      }
+        "magic_rank": 34
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CCI",
@@ -4364,15 +4918,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7063,
-        "earnings_yield": 0.0336,
+        "earnings_yield": 0.0337,
         "ebit": 2075000000,
-        "price": 79.66,
-        "market_cap": 34811420000,
-        "enterprise_value": 61832420000,
-        "ey_rank": 124,
+        "price": 79.05,
+        "market_cap": 34544850000,
+        "enterprise_value": 61565850000,
+        "ey_rank": 125,
         "roc_rank": 57,
-        "magic_rank": 83
-      }
+        "magic_rank": 84
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CHD",
@@ -4401,15 +4958,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.1686,
-        "earnings_yield": 0.0425,
+        "earnings_yield": 0.0429,
         "ebit": 1077600000,
-        "price": 96.36,
-        "market_cap": 23540748000,
-        "enterprise_value": 25336848000,
-        "ey_rank": 94,
+        "price": 95.41,
+        "market_cap": 23308663000,
+        "enterprise_value": 25104763000,
+        "ey_rank": 92,
         "roc_rank": 29,
         "magic_rank": 36
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CL",
@@ -4438,15 +4998,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.9403,
-        "earnings_yield": 0.0406,
+        "earnings_yield": 0.0411,
         "ebit": 3306000000,
-        "price": 92.24,
-        "market_cap": 74815864000,
-        "enterprise_value": 81513864000,
-        "ey_rank": 103,
+        "price": 91.03,
+        "market_cap": 73834433000,
+        "enterprise_value": 80532433000,
+        "ey_rank": 100,
         "roc_rank": 37,
-        "magic_rank": 51
-      }
+        "magic_rank": 49
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CSCO",
@@ -4475,15 +5038,18 @@
       "mf_metrics": {
         "asof": "2025-07-26",
         "roc": 5.7789,
-        "earnings_yield": 0.0235,
+        "earnings_yield": 0.0243,
         "ebit": 11760000000,
-        "price": 121.31,
-        "market_cap": 484997380000,
-        "enterprise_value": 501262380000,
+        "price": 117.09,
+        "market_cap": 468125820000,
+        "enterprise_value": 484390820000,
         "ey_rank": 157,
         "roc_rank": 5,
-        "magic_rank": 67
-      }
+        "magic_rank": 69
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CVNA",
@@ -4509,7 +5075,10 @@
         "leverage_ratio": 0.3659,
         "asset_turnover": 2.395
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DD",
@@ -4535,7 +5104,10 @@
         "leverage_ratio": 0.1453,
         "asset_turnover": 0.187
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DGX",
@@ -4564,15 +5136,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6756,
-        "earnings_yield": 0.0542,
+        "earnings_yield": 0.0545,
         "ebit": 1556000000,
-        "price": 207.44,
-        "market_cap": 23440720000,
-        "enterprise_value": 28691720000,
-        "ey_rank": 58,
+        "price": 206.0,
+        "market_cap": 23278000000,
+        "enterprise_value": 28529000000,
+        "ey_rank": 60,
         "roc_rank": 61,
-        "magic_rank": 34
-      }
+        "magic_rank": 37
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DOV",
@@ -4601,15 +5176,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4419,
-        "earnings_yield": 0.0439,
+        "earnings_yield": 0.0441,
         "ebit": 1373361000,
-        "price": 215.33,
-        "market_cap": 29667521410,
-        "enterprise_value": 31318685410,
+        "price": 214.15,
+        "market_cap": 29504944550,
+        "enterprise_value": 31156108550,
         "ey_rank": 88,
         "roc_rank": 98,
-        "magic_rank": 88
-      }
+        "magic_rank": 90
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DRI",
@@ -4635,7 +5213,10 @@
         "leverage_ratio": 0.1691,
         "asset_turnover": 1.067
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EA",
@@ -4666,13 +5247,16 @@
         "roc": 1.4728,
         "earnings_yield": 0.0235,
         "ebit": 1162000000,
-        "price": 206.41,
-        "market_cap": 52221730000,
-        "enterprise_value": 49357730000,
-        "ey_rank": 158,
+        "price": 206.65,
+        "market_cap": 52282450000,
+        "enterprise_value": 49418450000,
+        "ey_rank": 159,
         "roc_rank": 17,
-        "magic_rank": 75
-      }
+        "magic_rank": 77
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ECL",
@@ -4701,15 +5285,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.5828,
-        "earnings_yield": 0.0319,
+        "earnings_yield": 0.0324,
         "ebit": 2737600000,
-        "price": 274.31,
-        "market_cap": 78233212000,
-        "enterprise_value": 85823312000,
-        "ey_rank": 132,
+        "price": 269.75,
+        "market_cap": 76932700000,
+        "enterprise_value": 84522800000,
+        "ey_rank": 129,
         "roc_rank": 69,
-        "magic_rank": 107
-      }
+        "magic_rank": 104
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ELV",
@@ -4738,15 +5325,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2702,
-        "earnings_yield": 0.0621,
+        "earnings_yield": 0.0609,
         "ebit": 7199000000,
-        "price": 416.23,
-        "market_cap": 93485258000,
-        "enterprise_value": 115890258000,
-        "ey_rank": 40,
+        "price": 426.79,
+        "market_cap": 95857034000,
+        "enterprise_value": 118262034000,
+        "ey_rank": 43,
         "roc_rank": 137,
-        "magic_rank": 78
-      }
+        "magic_rank": 82
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EME",
@@ -4775,15 +5365,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.2925,
-        "earnings_yield": 0.0501,
+        "earnings_yield": 0.0506,
         "ebit": 1713418000,
-        "price": 781.78,
-        "market_cap": 35294057725,
-        "enterprise_value": 34182089725,
-        "ey_rank": 67,
+        "price": 774.74,
+        "market_cap": 34976231526,
+        "enterprise_value": 33864263526,
+        "ey_rank": 68,
         "roc_rank": 23,
-        "magic_rank": 21
-      }
+        "magic_rank": 22
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EMR",
@@ -4809,7 +5402,10 @@
         "leverage_ratio": 0.1982,
         "asset_turnover": 0.407
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EQIX",
@@ -4838,15 +5434,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.0745,
-        "earnings_yield": 0.018,
+        "earnings_yield": 0.0185,
         "ebit": 1848000000,
-        "price": 1051.21,
-        "market_cap": 103147878830,
-        "enterprise_value": 102719878830,
-        "ey_rank": 171,
+        "price": 1023.54,
+        "market_cap": 100432815420,
+        "enterprise_value": 100004815420,
+        "ey_rank": 169,
         "roc_rank": 189,
         "magic_rank": 189
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ETN",
@@ -4872,7 +5471,10 @@
         "leverage_ratio": 0.2398,
         "asset_turnover": 0.715
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FIS",
@@ -4898,7 +5500,10 @@
         "leverage_ratio": 0.2708,
         "asset_turnover": 0.316
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GEHC",
@@ -4924,7 +5529,10 @@
         "leverage_ratio": 0.2573,
         "asset_turnover": 0.623
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GEV",
@@ -4950,7 +5558,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.739
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GNRC",
@@ -4979,15 +5590,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1403,
-        "earnings_yield": 0.0196,
+        "earnings_yield": 0.0204,
         "ebit": 289191000,
-        "price": 233.94,
-        "market_cap": 13866976207,
-        "enterprise_value": 14732042207,
+        "price": 225.12,
+        "market_cap": 13344163819,
+        "enterprise_value": 14209229819,
         "ey_rank": 167,
         "roc_rank": 170,
         "magic_rank": 183
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GPC",
@@ -5013,7 +5627,10 @@
         "leverage_ratio": 0.1682,
         "asset_turnover": 1.26
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GPN",
@@ -5039,7 +5656,10 @@
         "leverage_ratio": 0.404,
         "asset_turnover": 0.164
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GRMN",
@@ -5068,15 +5688,18 @@
       "mf_metrics": {
         "asof": "2025-12-27",
         "roc": 0.3178,
-        "earnings_yield": 0.0419,
+        "earnings_yield": 0.0422,
         "ebit": 1876076000,
-        "price": 243.11,
-        "market_cap": 47069985760,
-        "enterprise_value": 44791339760,
-        "ey_rank": 95,
+        "price": 241.39,
+        "market_cap": 46736966240,
+        "enterprise_value": 44458320240,
+        "ey_rank": 97,
         "roc_rank": 128,
-        "magic_rank": 129
-      }
+        "magic_rank": 130
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HAS",
@@ -5107,13 +5730,16 @@
         "roc": 0.0116,
         "earnings_yield": 0.0008,
         "ebit": 11100000,
-        "price": 78.96,
-        "market_cap": 11070192000,
-        "enterprise_value": 13558492000,
+        "price": 78.42,
+        "market_cap": 10994484000,
+        "enterprise_value": 13482784000,
         "ey_rank": 195,
         "roc_rank": 194,
         "magic_rank": 195
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HSIC",
@@ -5139,7 +5765,10 @@
         "leverage_ratio": 0.206,
         "asset_turnover": 1.29
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IFF",
@@ -5168,15 +5797,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": -0.0671,
-        "earnings_yield": -0.0151,
+        "earnings_yield": -0.0156,
         "ebit": -382000000,
-        "price": 77.53,
-        "market_cap": 19847680000,
-        "enterprise_value": 25251680000,
+        "price": 74.67,
+        "market_cap": 19115520000,
+        "enterprise_value": 24519520000,
         "ey_rank": 203,
         "roc_rank": 201,
-        "magic_rank": 204
-      }
+        "magic_rank": 203
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "INTC",
@@ -5202,7 +5834,10 @@
         "leverage_ratio": 0.2085,
         "asset_turnover": 0.269
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "JBL",
@@ -5228,7 +5863,10 @@
         "leverage_ratio": 0.1287,
         "asset_turnover": 1.718
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "JCI",
@@ -5254,7 +5892,10 @@
         "leverage_ratio": 0.2424,
         "asset_turnover": 0.553
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KEYS",
@@ -5283,15 +5924,18 @@
       "mf_metrics": {
         "asof": "2025-10-31",
         "roc": 0.266,
-        "earnings_yield": 0.0155,
+        "earnings_yield": 0.0154,
         "ebit": 876000000,
-        "price": 322.05,
-        "market_cap": 55714650000,
-        "enterprise_value": 56375650000,
+        "price": 325.73,
+        "market_cap": 56351290000,
+        "enterprise_value": 57012290000,
         "ey_rank": 176,
         "roc_rank": 138,
         "magic_rank": 178
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KMB",
@@ -5320,15 +5964,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.474,
-        "earnings_yield": 0.0535,
+        "earnings_yield": 0.0559,
         "ebit": 2351000000,
-        "price": 112.41,
-        "market_cap": 37455012000,
-        "enterprise_value": 43935012000,
-        "ey_rank": 60,
+        "price": 106.82,
+        "market_cap": 35592424000,
+        "enterprise_value": 42072424000,
+        "ey_rank": 57,
         "roc_rank": 87,
         "magic_rank": 53
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LHX",
@@ -5354,7 +6001,10 @@
         "leverage_ratio": 0.2638,
         "asset_turnover": 0.512
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LMT",
@@ -5383,14 +6033,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7091,
-        "earnings_yield": 0.0553,
+        "earnings_yield": 0.0561,
         "ebit": 7731000000,
-        "price": 523.22,
-        "market_cap": 122171870000,
-        "enterprise_value": 139750870000,
+        "price": 514.99,
+        "market_cap": 120250165000,
+        "enterprise_value": 137829165000,
         "ey_rank": 55,
         "roc_rank": 56,
         "magic_rank": 30
+      },
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 0,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 1.087,
+        "pe": 21.66,
+        "pb": 17.89,
+        "graham_number": 387.46,
+        "eps_growth": 0.0337,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -5417,7 +6087,10 @@
         "leverage_ratio": 0.7354,
         "asset_turnover": 2.002
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MCHP",
@@ -5446,15 +6119,18 @@
       "mf_metrics": {
         "asof": "2026-03-31",
         "roc": 0.2087,
-        "earnings_yield": 0.0092,
+        "earnings_yield": 0.0093,
         "ebit": 490100000,
-        "price": 88.59,
-        "market_cap": 48299268000,
-        "enterprise_value": 53555368000,
+        "price": 87.11,
+        "market_cap": 47492372000,
+        "enterprise_value": 52748472000,
         "ey_rank": 187,
         "roc_rank": 149,
         "magic_rank": 182
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MCK",
@@ -5480,7 +6156,10 @@
         "leverage_ratio": 0.0793,
         "asset_turnover": 5.369
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "META",
@@ -5506,7 +6185,27 @@
         "leverage_ratio": 0.1605,
         "asset_turnover": 0.728
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 1,
+        "earnings_stability": 1,
+        "dividend_record": 0,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 2.599,
+        "pe": 31.87,
+        "pb": 7.83,
+        "graham_number": 249.65,
+        "eps_growth": 1.054,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
+      }
     },
     {
       "symbol": "MKC",
@@ -5535,15 +6234,18 @@
       "mf_metrics": {
         "asof": "2025-11-30",
         "roc": 2.0408,
-        "earnings_yield": 0.0607,
+        "earnings_yield": 0.0603,
         "ebit": 1070800000,
-        "price": 52.45,
-        "market_cap": 14130030000,
-        "enterprise_value": 17649030000,
-        "ey_rank": 44,
+        "price": 52.85,
+        "market_cap": 14237790000,
+        "enterprise_value": 17756790000,
+        "ey_rank": 46,
         "roc_rank": 12,
-        "magic_rank": 10
-      }
+        "magic_rank": 12
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MSFT",
@@ -5574,12 +6276,32 @@
         "roc": 0.5043,
         "earnings_yield": 0.0445,
         "ebit": 128528000000,
-        "price": 385.1,
-        "market_cap": 2874771500000,
-        "enterprise_value": 2887680500000,
+        "price": 384.93,
+        "market_cap": 2873502450000,
+        "enterprise_value": 2886411450000,
         "ey_rank": 87,
         "roc_rank": 79,
-        "magic_rank": 71
+        "magic_rank": 70
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-06-30",
+        "current_ratio": 1.353,
+        "pe": 32.88,
+        "pb": 8.37,
+        "graham_number": 275.04,
+        "eps_growth": 0.8606,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -5609,15 +6331,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 2.1543,
-        "earnings_yield": 0.038,
+        "earnings_yield": 0.0387,
         "ebit": 2988000000,
-        "price": 422.88,
-        "market_cap": 71466720000,
-        "enterprise_value": 78714720000,
+        "price": 413.71,
+        "market_cap": 69916990000,
+        "enterprise_value": 77164990000,
         "ey_rank": 112,
         "roc_rank": 11,
         "magic_rank": 38
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NTAP",
@@ -5646,15 +6371,18 @@
       "mf_metrics": {
         "asof": "2026-04-24",
         "roc": 0.7133,
-        "earnings_yield": 0.0487,
+        "earnings_yield": 0.0472,
         "ebit": 1674000000,
-        "price": 168.87,
-        "market_cap": 33942870000,
-        "enterprise_value": 34359870000,
-        "ey_rank": 78,
+        "price": 174.55,
+        "market_cap": 35084550000,
+        "enterprise_value": 35501550000,
+        "ey_rank": 82,
         "roc_rank": 52,
-        "magic_rank": 46
-      }
+        "magic_rank": 47
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NUE",
@@ -5680,7 +6408,10 @@
         "leverage_ratio": 0.1968,
         "asset_turnover": 0.957
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PAYX",
@@ -5709,15 +6440,18 @@
       "mf_metrics": {
         "asof": "2025-05-31",
         "roc": 0.8932,
-        "earnings_yield": 0.0523,
+        "earnings_yield": 0.0514,
         "ebit": 2207700000,
-        "price": 107.54,
-        "market_cap": 38929480000,
-        "enterprise_value": 42249080000,
-        "ey_rank": 63,
+        "price": 109.52,
+        "market_cap": 39646240000,
+        "enterprise_value": 42965840000,
+        "ey_rank": 65,
         "roc_rank": 40,
-        "magic_rank": 27
-      }
+        "magic_rank": 28
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PEP",
@@ -5746,14 +6480,34 @@
       "mf_metrics": {
         "asof": "2025-12-27",
         "roc": 0.4583,
-        "earnings_yield": 0.0503,
+        "earnings_yield": 0.0509,
         "ebit": 11498000000,
-        "price": 137.38,
-        "market_cap": 188622740000,
-        "enterprise_value": 228645740000,
+        "price": 135.45,
+        "market_cap": 185972850000,
+        "enterprise_value": 225995850000,
         "ey_rank": 66,
         "roc_rank": 91,
         "magic_rank": 60
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-27",
+        "current_ratio": 0.853,
+        "pe": 20.82,
+        "pb": 9.11,
+        "graham_number": 189.79,
+        "eps_growth": 0.2352,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -5780,7 +6534,10 @@
         "leverage_ratio": 0.2961,
         "asset_turnover": 0.293
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PG",
@@ -5809,14 +6566,34 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 1.5457,
-        "earnings_yield": 0.0536,
+        "earnings_yield": 0.0539,
         "ebit": 20451000000,
-        "price": 147.04,
-        "market_cap": 360894976000,
-        "enterprise_value": 381710976000,
-        "ey_rank": 59,
+        "price": 146.08,
+        "market_cap": 358538752000,
+        "enterprise_value": 379354752000,
+        "ey_rank": 61,
         "roc_rank": 16,
-        "magic_rank": 14
+        "magic_rank": 15
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-06-30",
+        "current_ratio": 0.704,
+        "pe": 23.78,
+        "pb": 6.86,
+        "graham_number": 163.09,
+        "eps_growth": 0.5361,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -5843,7 +6620,10 @@
         "leverage_ratio": 0.2099,
         "asset_turnover": 1.524
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "QCOM",
@@ -5872,14 +6652,34 @@
       "mf_metrics": {
         "asof": "2025-09-28",
         "roc": 0.58,
-        "earnings_yield": 0.0566,
+        "earnings_yield": 0.0599,
         "ebit": 12355000000,
-        "price": 189.16,
-        "market_cap": 209021800000,
-        "enterprise_value": 218312800000,
-        "ey_rank": 52,
+        "price": 178.1,
+        "market_cap": 196800500000,
+        "enterprise_value": 206091500000,
+        "ey_rank": 47,
         "roc_rank": 70,
-        "magic_rank": 35
+        "magic_rank": 32
+      },
+      "graham_score": 5,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 1,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-09-28",
+        "current_ratio": 2.816,
+        "pe": 26.18,
+        "pb": 9.28,
+        "graham_number": 242.92,
+        "eps_growth": 0.2766,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -5909,15 +6709,18 @@
       "mf_metrics": {
         "asof": "2026-01-31",
         "roc": 0.3923,
-        "earnings_yield": 0.0391,
+        "earnings_yield": 0.0395,
         "ebit": 2707357000,
-        "price": 222.88,
-        "market_cap": 72305838080,
-        "enterprise_value": 69229052080,
+        "price": 220.93,
+        "market_cap": 71673226880,
+        "enterprise_value": 68596440880,
         "ey_rank": 107,
         "roc_rank": 105,
-        "magic_rank": 117
-      }
+        "magic_rank": 119
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SHW",
@@ -5943,7 +6746,10 @@
         "leverage_ratio": 0.3598,
         "asset_turnover": 0.998
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "STLD",
@@ -5972,15 +6778,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1141,
-        "earnings_yield": 0.0395,
+        "earnings_yield": 0.0388,
         "ebit": 1475986000,
-        "price": 228.42,
-        "market_cap": 33898441680,
-        "enterprise_value": 37339726680,
-        "ey_rank": 105,
+        "price": 233.35,
+        "market_cap": 34630073400,
+        "enterprise_value": 38071358400,
+        "ey_rank": 111,
         "roc_rank": 182,
-        "magic_rank": 167
-      }
+        "magic_rank": 168
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SYK",
@@ -6009,15 +6818,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4511,
-        "earnings_yield": 0.0351,
+        "earnings_yield": 0.037,
         "ebit": 4889000000,
-        "price": 329.78,
-        "market_cap": 127459970000,
-        "enterprise_value": 139307970000,
-        "ey_rank": 122,
+        "price": 311.07,
+        "market_cap": 120228555000,
+        "enterprise_value": 132076555000,
+        "ey_rank": 116,
         "roc_rank": 95,
-        "magic_rank": 125
-      }
+        "magic_rank": 116
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SYY",
@@ -6046,15 +6858,18 @@
       "mf_metrics": {
         "asof": "2025-06-28",
         "roc": 0.3795,
-        "earnings_yield": 0.059,
+        "earnings_yield": 0.0595,
         "ebit": 3088000000,
-        "price": 83.83,
-        "market_cap": 41062084072,
-        "enterprise_value": 52351084072,
-        "ey_rank": 48,
+        "price": 82.85,
+        "market_cap": 40582054937,
+        "enterprise_value": 51871054937,
+        "ey_rank": 49,
         "roc_rank": 106,
         "magic_rank": 56
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TEL",
@@ -6083,15 +6898,18 @@
       "mf_metrics": {
         "asof": "2025-09-26",
         "roc": 0.4486,
-        "earnings_yield": 0.0499,
+        "earnings_yield": 0.0498,
         "ebit": 3211000000,
-        "price": 200.36,
-        "market_cap": 59907640000,
-        "enterprise_value": 64346640000,
-        "ey_rank": 70,
+        "price": 200.98,
+        "market_cap": 60093020000,
+        "enterprise_value": 64532020000,
+        "ey_rank": 75,
         "roc_rank": 96,
-        "magic_rank": 72
-      }
+        "magic_rank": 74
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TPR",
@@ -6117,7 +6935,10 @@
         "leverage_ratio": 0.3642,
         "asset_turnover": 0.523
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TSCO",
@@ -6146,15 +6967,18 @@
       "mf_metrics": {
         "asof": "2025-12-27",
         "roc": 0.3743,
-        "earnings_yield": 0.0826,
+        "earnings_yield": 0.0823,
         "ebit": 1467389000,
-        "price": 30.43,
-        "market_cap": 16194176540,
-        "enterprise_value": 17765041540,
+        "price": 30.55,
+        "market_cap": 16258037900,
+        "enterprise_value": 17828902900,
         "ey_rank": 19,
         "roc_rank": 109,
         "magic_rank": 44
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TXN",
@@ -6183,14 +7007,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2629,
-        "earnings_yield": 0.0204,
+        "earnings_yield": 0.0208,
         "ebit": 6023000000,
-        "price": 311.46,
-        "market_cap": 284362980000,
-        "enterprise_value": 295185980000,
-        "ey_rank": 166,
+        "price": 305.55,
+        "market_cap": 278967150000,
+        "enterprise_value": 289790150000,
+        "ey_rank": 165,
         "roc_rank": 139,
         "magic_rank": 175
+      },
+      "graham_score": 3,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 0,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 4.353,
+        "pe": 51.48,
+        "pb": 17.14,
+        "graham_number": 882.49,
+        "eps_growth": -0.09,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -6217,7 +7061,10 @@
         "leverage_ratio": 0.1063,
         "asset_turnover": 0.45
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ULTA",
@@ -6243,7 +7090,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 2.065
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VEEV",
@@ -6269,7 +7119,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.435
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VLO",
@@ -6295,7 +7148,10 @@
         "leverage_ratio": 0.1425,
         "asset_turnover": 2.04
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VLTO",
@@ -6321,7 +7177,10 @@
         "leverage_ratio": 0.2565,
         "asset_turnover": 0.859
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "VRT",
@@ -6347,7 +7206,10 @@
         "leverage_ratio": 0.2368,
         "asset_turnover": 1.12
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WAT",
@@ -6373,7 +7235,10 @@
         "leverage_ratio": 0.1866,
         "asset_turnover": 0.695
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WDC",
@@ -6399,7 +7264,10 @@
         "leverage_ratio": 0.1775,
         "asset_turnover": 0.394
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WM",
@@ -6425,7 +7293,10 @@
         "leverage_ratio": 0.4843,
         "asset_turnover": 0.566
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "YUM",
@@ -6451,7 +7322,10 @@
         "leverage_ratio": 1.4483,
         "asset_turnover": 1.221
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ZBH",
@@ -6477,7 +7351,10 @@
         "leverage_ratio": 0.3002,
         "asset_turnover": 0.385
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "A",
@@ -6506,15 +7383,18 @@
       "mf_metrics": {
         "asof": "2025-10-31",
         "roc": 0.3464,
-        "earnings_yield": 0.0371,
+        "earnings_yield": 0.0369,
         "ebit": 1479000000,
-        "price": 134.29,
-        "market_cap": 38272650000,
-        "enterprise_value": 39837650000,
-        "ey_rank": 115,
+        "price": 135.2,
+        "market_cap": 38532000000,
+        "enterprise_value": 40097000000,
+        "ey_rank": 117,
         "roc_rank": 117,
         "magic_rank": 134
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ACN",
@@ -6543,15 +7423,18 @@
       "mf_metrics": {
         "asof": "2025-08-31",
         "roc": 1.0109,
-        "earnings_yield": 0.1291,
+        "earnings_yield": 0.1298,
         "ebit": 10225664000,
-        "price": 135.23,
-        "market_cap": 85524199655,
-        "enterprise_value": 79194123655,
+        "price": 134.56,
+        "market_cap": 85100468132,
+        "enterprise_value": 78770392132,
         "ey_rank": 5,
         "roc_rank": 36,
         "magic_rank": 7
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ALGN",
@@ -6580,15 +7463,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2986,
-        "earnings_yield": 0.0457,
+        "earnings_yield": 0.046,
         "ebit": 545755000,
-        "price": 179.45,
-        "market_cap": 13025916600,
-        "enterprise_value": 11931008600,
-        "ey_rank": 85,
+        "price": 178.46,
+        "market_cap": 12954054480,
+        "enterprise_value": 11859146480,
+        "ey_rank": 84,
         "roc_rank": 133,
-        "magic_rank": 126
-      }
+        "magic_rank": 124
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AVY",
@@ -6614,7 +7500,10 @@
         "leverage_ratio": 0.3635,
         "asset_turnover": 1.054
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BAX",
@@ -6643,15 +7532,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": -0.0452,
-        "earnings_yield": -0.0161,
+        "earnings_yield": -0.0165,
         "ebit": -308000000,
-        "price": 22.62,
-        "market_cap": 11604060000,
-        "enterprise_value": 19077060000,
+        "price": 21.8,
+        "market_cap": 11183400000,
+        "enterprise_value": 18656400000,
         "ey_rank": 204,
         "roc_rank": 200,
         "magic_rank": 202
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BDX",
@@ -6680,15 +7572,18 @@
       "mf_metrics": {
         "asof": "2025-09-30",
         "roc": 0.3249,
-        "earnings_yield": 0.0413,
+        "earnings_yield": 0.0416,
         "ebit": 2579000000,
-        "price": 151.94,
-        "market_cap": 43836057460,
-        "enterprise_value": 62376057460,
-        "ey_rank": 96,
+        "price": 150.65,
+        "market_cap": 43463880850,
+        "enterprise_value": 62003880850,
+        "ey_rank": 98,
         "roc_rank": 123,
-        "magic_rank": 127
-      }
+        "magic_rank": 128
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BIIB",
@@ -6714,7 +7609,10 @@
         "leverage_ratio": 0.2135,
         "asset_turnover": 0.353
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BLDR",
@@ -6743,15 +7641,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2211,
-        "earnings_yield": 0.0619,
+        "earnings_yield": 0.0622,
         "ebit": 786276000,
-        "price": 75.69,
-        "market_cap": 8463807180,
-        "enterprise_value": 12709087180,
-        "ey_rank": 41,
+        "price": 75.16,
+        "market_cap": 8404541520,
+        "enterprise_value": 12649821520,
+        "ey_rank": 40,
         "roc_rank": 147,
         "magic_rank": 92
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CDW",
@@ -6780,15 +7681,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.145,
-        "earnings_yield": 0.0687,
+        "earnings_yield": 0.0707,
         "ebit": 1655600000,
-        "price": 144.39,
-        "market_cap": 19073919000,
-        "enterprise_value": 24085019000,
-        "ey_rank": 29,
+        "price": 139.38,
+        "market_cap": 18412098000,
+        "enterprise_value": 23423198000,
+        "ey_rank": 26,
         "roc_rank": 30,
-        "magic_rank": 11
-      }
+        "magic_rank": 10
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "COO",
@@ -6817,15 +7721,18 @@
       "mf_metrics": {
         "asof": "2025-10-31",
         "roc": 0.2222,
-        "earnings_yield": 0.0413,
+        "earnings_yield": 0.0424,
         "ebit": 682900000,
-        "price": 70.7,
-        "market_cap": 14140000000,
-        "enterprise_value": 16532900000,
-        "ey_rank": 97,
+        "price": 68.51,
+        "market_cap": 13702000000,
+        "enterprise_value": 16094900000,
+        "ey_rank": 96,
         "roc_rank": 146,
         "magic_rank": 142
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "COP",
@@ -6851,7 +7758,10 @@
         "leverage_ratio": 0.1839,
         "asset_turnover": 0.422
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CSGP",
@@ -6880,15 +7790,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": -0.0267,
-        "earnings_yield": -0.0064,
+        "earnings_yield": -0.0065,
         "ebit": -72000000,
-        "price": 28.39,
-        "market_cap": 11943673000,
-        "enterprise_value": 11303673000,
-        "ey_rank": 200,
+        "price": 27.68,
+        "market_cap": 11644976000,
+        "enterprise_value": 11004976000,
+        "ey_rank": 201,
         "roc_rank": 198,
         "magic_rank": 198
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CVX",
@@ -6914,7 +7827,10 @@
         "leverage_ratio": 0.1228,
         "asset_turnover": 0.718
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EBAY",
@@ -6943,15 +7859,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.2742,
-        "earnings_yield": 0.0381,
+        "earnings_yield": 0.0396,
         "ebit": 2277000000,
-        "price": 117.2,
-        "market_cap": 54849600000,
-        "enterprise_value": 59728600000,
-        "ey_rank": 111,
+        "price": 112.54,
+        "market_cap": 52668720000,
+        "enterprise_value": 57547720000,
+        "ey_rank": 106,
         "roc_rank": 25,
-        "magic_rank": 48
-      }
+        "magic_rank": 45
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EW",
@@ -6980,15 +7899,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1876,
-        "earnings_yield": 0.0245,
+        "earnings_yield": 0.0251,
         "ebit": 1264200000,
-        "price": 92.21,
-        "market_cap": 54016618000,
-        "enterprise_value": 51676918000,
-        "ey_rank": 156,
+        "price": 90.09,
+        "market_cap": 52774722000,
+        "enterprise_value": 50435022000,
+        "ey_rank": 154,
         "roc_rank": 156,
         "magic_rank": 177
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FCX",
@@ -7017,15 +7939,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1344,
-        "earnings_yield": 0.0691,
+        "earnings_yield": 0.0686,
         "ebit": 6518000000,
-        "price": 61.52,
-        "market_cap": 88773360000,
-        "enterprise_value": 94328360000,
+        "price": 61.95,
+        "market_cap": 89393850000,
+        "enterprise_value": 94948850000,
         "ey_rank": 28,
         "roc_rank": 171,
         "magic_rank": 105
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FTNT",
@@ -7054,15 +7979,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.8388,
-        "earnings_yield": 0.0175,
+        "earnings_yield": 0.0165,
         "ebit": 2084700000,
-        "price": 157.51,
-        "market_cap": 120432146000,
-        "enterprise_value": 118933146000,
-        "ey_rank": 172,
+        "price": 166.83,
+        "market_cap": 127558218000,
+        "enterprise_value": 126059218000,
+        "ey_rank": 175,
         "roc_rank": 41,
-        "magic_rank": 118
-      }
+        "magic_rank": 123
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FTV",
@@ -7088,7 +8016,10 @@
         "leverage_ratio": 0.1965,
         "asset_turnover": 0.244
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GWW",
@@ -7117,15 +8048,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4293,
-        "earnings_yield": 0.0367,
+        "earnings_yield": 0.0368,
         "ebit": 2495000000,
-        "price": 1375.76,
-        "market_cap": 66036480000,
-        "enterprise_value": 67939480000,
-        "ey_rank": 116,
+        "price": 1371.07,
+        "market_cap": 65811360000,
+        "enterprise_value": 67714360000,
+        "ey_rank": 118,
         "roc_rank": 100,
-        "magic_rank": 121
-      }
+        "magic_rank": 125
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HPQ",
@@ -7151,7 +8085,10 @@
         "leverage_ratio": 0.2112,
         "asset_turnover": 1.386
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HRL",
@@ -7177,7 +8114,10 @@
         "leverage_ratio": 0.2129,
         "asset_turnover": 0.901
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IP",
@@ -7203,7 +8143,10 @@
         "leverage_ratio": 0.2328,
         "asset_turnover": 1.037
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IR",
@@ -7232,15 +8175,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3678,
-        "earnings_yield": 0.0326,
+        "earnings_yield": 0.0325,
         "ebit": 1144600000,
-        "price": 78.85,
-        "market_cap": 31618850000,
-        "enterprise_value": 35154750000,
+        "price": 79.01,
+        "market_cap": 31683010000,
+        "enterprise_value": 35218910000,
         "ey_rank": 128,
         "roc_rank": 112,
         "magic_rank": 140
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ISRG",
@@ -7269,15 +8215,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2246,
-        "earnings_yield": 0.0204,
+        "earnings_yield": 0.0219,
         "ebit": 2945500000,
-        "price": 406.78,
-        "market_cap": 147539106000,
-        "enterprise_value": 144171106000,
-        "ey_rank": 165,
+        "price": 379.5,
+        "market_cap": 137644650000,
+        "enterprise_value": 134276650000,
+        "ey_rank": 161,
         "roc_rank": 145,
         "magic_rank": 176
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "IT",
@@ -7306,15 +8255,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 4.9212,
-        "earnings_yield": 0.0905,
+        "earnings_yield": 0.0907,
         "ebit": 1025711000,
-        "price": 133.24,
-        "market_cap": 10073610200,
-        "enterprise_value": 11332763200,
-        "ey_rank": 14,
+        "price": 132.97,
+        "market_cap": 10053196850,
+        "enterprise_value": 11312349850,
+        "ey_rank": 15,
         "roc_rank": 6,
-        "magic_rank": 1
-      }
+        "magic_rank": 3
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LII",
@@ -7343,15 +8295,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6513,
-        "earnings_yield": 0.0504,
+        "earnings_yield": 0.0495,
         "ebit": 1041500000,
-        "price": 552.03,
-        "market_cap": 19541862000,
-        "enterprise_value": 20670062000,
-        "ey_rank": 65,
+        "price": 562.77,
+        "market_cap": 19922058000,
+        "enterprise_value": 21050258000,
+        "ey_rank": 76,
         "roc_rank": 65,
-        "magic_rank": 45
-      }
+        "magic_rank": 52
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LULU",
@@ -7380,15 +8335,18 @@
       "mf_metrics": {
         "asof": "2026-02-01",
         "roc": 0.5014,
-        "earnings_yield": 0.1784,
+        "earnings_yield": 0.1818,
         "ebit": 2210615000,
-        "price": 119.26,
-        "market_cap": 14200049680,
-        "enterprise_value": 12392847680,
+        "price": 117.32,
+        "market_cap": 13969057760,
+        "enterprise_value": 12161855760,
         "ey_rank": 2,
         "roc_rank": 80,
         "magic_rank": 18
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MDLZ",
@@ -7414,7 +8372,10 @@
         "leverage_ratio": 0.2409,
         "asset_turnover": 0.563
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MMM",
@@ -7443,15 +8404,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3332,
-        "earnings_yield": 0.05,
+        "earnings_yield": 0.0502,
         "ebit": 4629000000,
-        "price": 157.52,
-        "market_cap": 85265576000,
-        "enterprise_value": 92632576000,
-        "ey_rank": 68,
+        "price": 156.58,
+        "market_cap": 84756754000,
+        "enterprise_value": 92123754000,
+        "ey_rank": 72,
         "roc_rank": 122,
-        "magic_rank": 95
-      }
+        "magic_rank": 99
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MPWR",
@@ -7480,15 +8444,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2984,
-        "earnings_yield": 0.0113,
+        "earnings_yield": 0.0111,
         "ebit": 728636000,
-        "price": 1352.74,
-        "market_cap": 65349516660,
-        "enterprise_value": 64250214660,
-        "ey_rank": 183,
+        "price": 1376.41,
+        "market_cap": 66492990690,
+        "enterprise_value": 65393688690,
+        "ey_rank": 185,
         "roc_rank": 134,
-        "magic_rank": 179
-      }
+        "magic_rank": 181
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NDSN",
@@ -7519,13 +8486,16 @@
         "roc": 0.7107,
         "earnings_yield": 0.0391,
         "ebit": 711725000,
-        "price": 286.6,
-        "market_cap": 16312125600,
-        "enterprise_value": 18199937600,
-        "ey_rank": 106,
+        "price": 286.83,
+        "market_cap": 16325216280,
+        "enterprise_value": 18213028280,
+        "ey_rank": 108,
         "roc_rank": 53,
-        "magic_rank": 63
-      }
+        "magic_rank": 68
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NOW",
@@ -7554,15 +8524,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7872,
-        "earnings_yield": 0.0167,
+        "earnings_yield": 0.0172,
         "ebit": 1824000000,
-        "price": 107.71,
-        "market_cap": 112739087610,
-        "enterprise_value": 109013087610,
-        "ey_rank": 174,
+        "price": 104.85,
+        "market_cap": 109745551350,
+        "enterprise_value": 106019551350,
+        "ey_rank": 173,
         "roc_rank": 47,
-        "magic_rank": 128
-      }
+        "magic_rank": 127
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NXPI",
@@ -7591,15 +8564,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4331,
-        "earnings_yield": 0.0366,
+        "earnings_yield": 0.0375,
         "ebit": 3047000000,
-        "price": 292.26,
-        "market_cap": 74330778060,
-        "enterprise_value": 83285778060,
-        "ey_rank": 117,
+        "price": 283.87,
+        "market_cap": 72196940970,
+        "enterprise_value": 81151940970,
+        "ey_rank": 115,
         "roc_rank": 99,
-        "magic_rank": 123
-      }
+        "magic_rank": 122
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "OKE",
@@ -7628,15 +8604,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1248,
-        "earnings_yield": 0.0651,
+        "earnings_yield": 0.0642,
         "ebit": 5741000000,
-        "price": 89.92,
-        "market_cap": 56280928000,
-        "enterprise_value": 88198928000,
-        "ey_rank": 33,
+        "price": 91.9,
+        "market_cap": 57520210000,
+        "enterprise_value": 89438210000,
+        "ey_rank": 36,
         "roc_rank": 176,
-        "magic_rank": 113
-      }
+        "magic_rank": 118
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ROP",
@@ -7662,7 +8641,10 @@
         "leverage_ratio": 0.2486,
         "asset_turnover": 0.252
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SOLV",
@@ -7691,15 +8673,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.0644,
-        "earnings_yield": 0.1239,
+        "earnings_yield": 0.1244,
         "ebit": 2181000000,
-        "price": 76.7,
-        "market_cap": 13445510000,
-        "enterprise_value": 17602510000,
+        "price": 76.28,
+        "market_cap": 13371884000,
+        "enterprise_value": 17528884000,
         "ey_rank": 6,
         "roc_rank": 33,
         "magic_rank": 6
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SW",
@@ -7725,7 +8710,10 @@
         "leverage_ratio": 0.2928,
         "asset_turnover": 0.713
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SWKS",
@@ -7754,15 +8742,18 @@
       "mf_metrics": {
         "asof": "2025-10-03",
         "roc": 0.1696,
-        "earnings_yield": 0.0544,
+        "earnings_yield": 0.0581,
         "ebit": 500000000,
-        "price": 60.38,
-        "market_cap": 9364938000,
-        "enterprise_value": 9199438000,
-        "ey_rank": 57,
+        "price": 56.58,
+        "market_cap": 8775558000,
+        "enterprise_value": 8610058000,
+        "ey_rank": 53,
         "roc_rank": 160,
-        "magic_rank": 124
-      }
+        "magic_rank": 121
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TECH",
@@ -7793,13 +8784,16 @@
         "roc": 0.1508,
         "earnings_yield": 0.0088,
         "ebit": 102255000,
-        "price": 71.3,
-        "market_cap": 11387822100,
-        "enterprise_value": 11571636100,
+        "price": 71.23,
+        "market_cap": 11376641910,
+        "enterprise_value": 11560455910,
         "ey_rank": 188,
         "roc_rank": 167,
         "magic_rank": 188
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TER",
@@ -7828,15 +8822,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4653,
-        "earnings_yield": 0.0113,
+        "earnings_yield": 0.0115,
         "ebit": 650051000,
-        "price": 359.6,
-        "market_cap": 57434952400,
-        "enterprise_value": 57341201400,
-        "ey_rank": 184,
+        "price": 353.23,
+        "market_cap": 56417542370,
+        "enterprise_value": 56323791370,
+        "ey_rank": 183,
         "roc_rank": 90,
         "magic_rank": 159
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TGT",
@@ -7862,7 +8859,10 @@
         "leverage_ratio": 0.242,
         "asset_turnover": 1.814
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TSLA",
@@ -7891,15 +8891,18 @@
       "mf_metrics": {
         "asof": "2024-12-31",
         "roc": 0.1082,
-        "earnings_yield": 0.005,
+        "earnings_yield": 0.0051,
         "ebit": 7076000000,
-        "price": 407.76,
-        "market_cap": 1426344480000,
-        "enterprise_value": 1418083480000,
+        "price": 396.18,
+        "market_cap": 1385837640000,
+        "enterprise_value": 1377576640000,
         "ey_rank": 190,
         "roc_rank": 183,
         "magic_rank": 192
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WEC",
@@ -7925,7 +8928,10 @@
         "leverage_ratio": 0.3591,
         "asset_turnover": 0.207
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WSM",
@@ -7951,7 +8957,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 1.473
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "XYZ",
@@ -7977,7 +8986,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.658
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ANET",
@@ -8006,15 +9018,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3439,
-        "earnings_yield": 0.0163,
+        "earnings_yield": 0.0167,
         "ebit": 3856100000,
-        "price": 186.96,
-        "market_cap": 238504872000,
-        "enterprise_value": 236540972000,
-        "ey_rank": 175,
+        "price": 182.57,
+        "market_cap": 232904549000,
+        "enterprise_value": 230940649000,
+        "ey_rank": 174,
         "roc_rank": 118,
-        "magic_rank": 168
-      }
+        "magic_rank": 167
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BG",
@@ -8040,7 +9055,10 @@
         "leverage_ratio": 0.1983,
         "asset_turnover": 0.681
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CARR",
@@ -8069,15 +9087,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4738,
-        "earnings_yield": 0.0312,
+        "earnings_yield": 0.031,
         "ebit": 2172000000,
-        "price": 69.34,
-        "market_cap": 59798816000,
-        "enterprise_value": 69716816000,
-        "ey_rank": 135,
+        "price": 69.76,
+        "market_cap": 60161024000,
+        "enterprise_value": 70079024000,
+        "ey_rank": 136,
         "roc_rank": 89,
-        "magic_rank": 130
-      }
+        "magic_rank": 129
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CNC",
@@ -8106,15 +9127,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": -1.3348,
-        "earnings_yield": -0.2329,
+        "earnings_yield": -0.2282,
         "ebit": -7623000000,
-        "price": 67.35,
-        "market_cap": 33211362600,
-        "enterprise_value": 32724362600,
+        "price": 68.72,
+        "market_cap": 33886931520,
+        "enterprise_value": 33399931520,
         "ey_rank": 206,
         "roc_rank": 207,
         "magic_rank": 206
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CNP",
@@ -8140,7 +9164,10 @@
         "leverage_ratio": 0.442,
         "asset_turnover": 0.213
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CRWD",
@@ -8169,15 +9196,18 @@
       "mf_metrics": {
         "asof": "2026-01-31",
         "roc": -0.0696,
-        "earnings_yield": -0.0069,
+        "earnings_yield": -0.0061,
         "ebit": -293292000,
-        "price": 187.18,
-        "market_cap": 46902815680,
-        "enterprise_value": 42418161680,
-        "ey_rank": 201,
+        "price": 210.73,
+        "market_cap": 52803880480,
+        "enterprise_value": 48319226480,
+        "ey_rank": 200,
         "roc_rank": 203,
-        "magic_rank": 203
-      }
+        "magic_rank": 201
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DDOG",
@@ -8208,13 +9238,16 @@
         "roc": -0.0107,
         "earnings_yield": -0.0005,
         "ebit": -44373000,
-        "price": 257.54,
-        "market_cap": 93608578880,
-        "enterprise_value": 93207273880,
+        "price": 270.73,
+        "market_cap": 98402774560,
+        "enterprise_value": 98001469560,
         "ey_rank": 196,
         "roc_rank": 196,
         "magic_rank": 196
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DECK",
@@ -8243,15 +9276,18 @@
       "mf_metrics": {
         "asof": "2026-03-31",
         "roc": 0.5297,
-        "earnings_yield": 0.0932,
+        "earnings_yield": 0.0926,
         "ebit": 1262903000,
-        "price": 105.99,
-        "market_cap": 15453871950,
-        "enterprise_value": 13546622950,
-        "ey_rank": 13,
+        "price": 106.6,
+        "market_cap": 15542813000,
+        "enterprise_value": 13635564000,
+        "ey_rank": 12,
         "roc_rank": 76,
         "magic_rank": 20
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EL",
@@ -8280,15 +9316,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": -0.1633,
-        "earnings_yield": -0.023,
+        "earnings_yield": -0.0234,
         "ebit": -785000000,
-        "price": 82.66,
-        "market_cap": 29765866000,
-        "enterprise_value": 34161866000,
+        "price": 80.86,
+        "market_cap": 29117686000,
+        "enterprise_value": 33513686000,
         "ey_rank": 205,
         "roc_rank": 204,
         "magic_rank": 205
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GIS",
@@ -8317,15 +9356,18 @@
       "mf_metrics": {
         "asof": "2026-05-31",
         "roc": 0.6879,
-        "earnings_yield": 0.0273,
+        "earnings_yield": 0.0272,
         "ebit": 885800000,
-        "price": 36.22,
-        "market_cap": 19475494000,
-        "enterprise_value": 32491294000,
+        "price": 36.46,
+        "market_cap": 19604542000,
+        "enterprise_value": 32620342000,
         "ey_rank": 148,
         "roc_rank": 58,
-        "magic_rank": 112
-      }
+        "magic_rank": 114
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HD",
@@ -8354,14 +9396,34 @@
       "mf_metrics": {
         "asof": "2025-02-02",
         "roc": 0.7242,
-        "earnings_yield": 0.0551,
+        "earnings_yield": 0.0559,
         "ebit": 21526000000,
-        "price": 343.3,
-        "market_cap": 340896900000,
-        "enterprise_value": 390602900000,
+        "price": 337.74,
+        "market_cap": 335375820000,
+        "enterprise_value": 385081820000,
         "ey_rank": 56,
         "roc_rank": 50,
-        "magic_rank": 28
+        "magic_rank": 29
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2026-02-01",
+        "current_ratio": 1.061,
+        "pe": 22.9,
+        "pb": 26.23,
+        "graham_number": 600.54,
+        "eps_growth": 0.1733,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -8388,7 +9450,10 @@
         "leverage_ratio": 0.3942,
         "asset_turnover": 0.498
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "JNJ",
@@ -8414,7 +9479,27 @@
         "leverage_ratio": 0.198,
         "asset_turnover": 0.523
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-28",
+        "current_ratio": 1.028,
+        "pe": 24.93,
+        "pb": 7.56,
+        "graham_number": 188.51,
+        "eps_growth": 0.6123,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
+      }
     },
     {
       "symbol": "KHC",
@@ -8440,7 +9525,10 @@
         "leverage_ratio": 0.2361,
         "asset_turnover": 0.283
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MRK",
@@ -8466,7 +9554,10 @@
         "leverage_ratio": 0.3416,
         "asset_turnover": 0.555
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NKE",
@@ -8492,7 +9583,27 @@
         "leverage_ratio": 0.2176,
         "asset_turnover": 1.215
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": 6,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 1,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 1,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-05-31",
+        "current_ratio": 2.211,
+        "pe": 14.1,
+        "pb": 4.83,
+        "graham_number": 68.03,
+        "eps_growth": 0.1932,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
+      }
     },
     {
       "symbol": "NVDA",
@@ -8521,14 +9632,34 @@
       "mf_metrics": {
         "asof": "2026-01-25",
         "roc": 1.2558,
-        "earnings_yield": 0.0252,
+        "earnings_yield": 0.0251,
         "ebit": 130387000000,
-        "price": 210.96,
-        "market_cap": 5171473440000,
-        "enterprise_value": 5169336440000,
+        "price": 211.8,
+        "market_cap": 5192065200000,
+        "enterprise_value": 5189928200000,
         "ey_rank": 155,
         "roc_rank": 26,
-        "magic_rank": 85
+        "magic_rank": 83
+      },
+      "graham_score": 5,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 1,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2026-01-25",
+        "current_ratio": 3.905,
+        "pe": 70.37,
+        "pb": 33.01,
+        "graham_number": 2322.84,
+        "eps_growth": 0.3469,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -8555,7 +9686,10 @@
         "leverage_ratio": 0.1704,
         "asset_turnover": 0.583
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ON",
@@ -8586,13 +9720,16 @@
         "roc": 0.0107,
         "earnings_yield": 0.0021,
         "ebit": 84200000,
-        "price": 95.96,
-        "market_cap": 39516328000,
-        "enterprise_value": 40349228000,
+        "price": 93.73,
+        "market_cap": 38598014000,
+        "enterprise_value": 39430914000,
         "ey_rank": 193,
         "roc_rank": 195,
         "magic_rank": 194
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "OXY",
@@ -8618,7 +9755,10 @@
         "leverage_ratio": 0.2964,
         "asset_turnover": 0.307
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PANW",
@@ -8644,7 +9784,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.461
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PKG",
@@ -8673,15 +9816,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1541,
-        "earnings_yield": 0.0462,
+        "earnings_yield": 0.0468,
         "ebit": 1107000000,
-        "price": 228.77,
-        "market_cap": 20497792000,
-        "enterprise_value": 23936092000,
-        "ey_rank": 84,
+        "price": 225.76,
+        "market_cap": 20228096000,
+        "enterprise_value": 23666396000,
+        "ey_rank": 83,
         "roc_rank": 166,
-        "magic_rank": 149
-      }
+        "magic_rank": 148
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SMCI",
@@ -8710,15 +9856,18 @@
       "mf_metrics": {
         "asof": "2025-06-30",
         "roc": 0.1198,
-        "earnings_yield": 0.0993,
+        "earnings_yield": 0.1027,
         "ebit": 1252994000,
-        "price": 28.31,
-        "market_cap": 17790060620,
-        "enterprise_value": 12620149620,
+        "price": 27.65,
+        "market_cap": 17375315300,
+        "enterprise_value": 12205404300,
         "ey_rank": 10,
         "roc_rank": 179,
-        "magic_rank": 94
-      }
+        "magic_rank": 93
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TAP",
@@ -8744,7 +9893,10 @@
         "leverage_ratio": 0.17,
         "asset_turnover": 0.5
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TDG",
@@ -8773,15 +9925,18 @@
       "mf_metrics": {
         "asof": "2025-09-30",
         "roc": 0.6499,
-        "earnings_yield": 0.0409,
+        "earnings_yield": 0.0428,
         "ebit": 4165000000,
-        "price": 1291.35,
-        "market_cap": 75156570000,
-        "enterprise_value": 101763570000,
-        "ey_rank": 102,
+        "price": 1215.34,
+        "market_cap": 70732788000,
+        "enterprise_value": 97339788000,
+        "ey_rank": 93,
         "roc_rank": 66,
-        "magic_rank": 73
-      }
+        "magic_rank": 66
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TRMB",
@@ -8810,15 +9965,18 @@
       "mf_metrics": {
         "asof": "2026-01-02",
         "roc": 1.9017,
-        "earnings_yield": 0.0426,
+        "earnings_yield": 0.0435,
         "ebit": 592000000,
-        "price": 52.82,
-        "market_cap": 12756030000,
-        "enterprise_value": 13894830000,
-        "ey_rank": 93,
+        "price": 51.58,
+        "market_cap": 12456570000,
+        "enterprise_value": 13595370000,
+        "ey_rank": 91,
         "roc_rank": 13,
-        "magic_rank": 29
-      }
+        "magic_rank": 27
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TSN",
@@ -8847,15 +10005,18 @@
       "mf_metrics": {
         "asof": "2025-09-27",
         "roc": 0.0862,
-        "earnings_yield": 0.0389,
+        "earnings_yield": 0.039,
         "ebit": 1098000000,
-        "price": 57.83,
-        "market_cap": 20645310000,
-        "enterprise_value": 28246310000,
+        "price": 57.48,
+        "market_cap": 20520360000,
+        "enterprise_value": 28121360000,
         "ey_rank": 109,
         "roc_rank": 188,
         "magic_rank": 170
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TTD",
@@ -8881,7 +10042,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.474
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "URI",
@@ -8907,7 +10071,10 @@
         "leverage_ratio": 0.4789,
         "asset_turnover": 0.131
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "WY",
@@ -8933,7 +10100,10 @@
         "leverage_ratio": 0.304,
         "asset_turnover": 0.418
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ZBRA",
@@ -8959,7 +10129,10 @@
         "leverage_ratio": 0.2777,
         "asset_turnover": 0.677
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "AES",
@@ -8985,7 +10158,10 @@
         "leverage_ratio": 0.0,
         "asset_turnover": 0.258
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "APD",
@@ -9016,13 +10192,16 @@
         "roc": -0.0325,
         "earnings_yield": -0.0135,
         "ebit": -877000000,
-        "price": 299.53,
-        "market_cap": 66705331000,
-        "enterprise_value": 64884031000,
+        "price": 299.4,
+        "market_cap": 66676380000,
+        "enterprise_value": 64855080000,
         "ey_rank": 202,
         "roc_rank": 199,
-        "magic_rank": 199
-      }
+        "magic_rank": 200
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DOW",
@@ -9048,7 +10227,10 @@
         "leverage_ratio": 0.3049,
         "asset_turnover": 0.697
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "F",
@@ -9077,15 +10259,18 @@
       "mf_metrics": {
         "asof": "2024-12-31",
         "roc": 0.0877,
-        "earnings_yield": 0.1564,
+        "earnings_yield": 0.1576,
         "ebit": 5219000000,
-        "price": 14.0,
-        "market_cap": 56294000000,
-        "enterprise_value": 33359000000,
+        "price": 13.94,
+        "market_cap": 56052740000,
+        "enterprise_value": 33117740000,
         "ey_rank": 4,
         "roc_rank": 187,
-        "magic_rank": 96
-      }
+        "magic_rank": 95
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SNPS",
@@ -9114,15 +10299,18 @@
       "mf_metrics": {
         "asof": "2025-10-31",
         "roc": 0.3064,
-        "earnings_yield": 0.0108,
+        "earnings_yield": 0.0113,
         "ebit": 914927000,
-        "price": 445.5,
-        "market_cap": 73799748000,
-        "enterprise_value": 84396233000,
-        "ey_rank": 185,
+        "price": 425.9,
+        "market_cap": 70552890400,
+        "enterprise_value": 81149375400,
+        "ey_rank": 184,
         "roc_rank": 132,
-        "magic_rank": 180
-      }
+        "magic_rank": 179
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "MRNA",
@@ -9148,7 +10336,10 @@
         "leverage_ratio": 0.0478,
         "asset_turnover": 0.137
       },
-      "mf_metrics": null
+      "mf_metrics": null,
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "BKNG",
@@ -9159,15 +10350,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.3847,
-        "earnings_yield": 1.1998,
+        "earnings_yield": 1.2189,
         "ebit": 8825000000,
-        "price": 178.39,
-        "market_cap": 5822471210,
-        "enterprise_value": 7355471210,
+        "price": 174.85,
+        "market_cap": 5706929150,
+        "enterprise_value": 7239929150,
         "ey_rank": 1,
         "roc_rank": 20,
         "magic_rank": 2
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CDNS",
@@ -9178,15 +10372,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4201,
-        "earnings_yield": 0.0146,
+        "earnings_yield": 0.0149,
         "ebit": 1492042000,
-        "price": 384.17,
-        "market_cap": 104998271040,
-        "enterprise_value": 101996954040,
+        "price": 376.8,
+        "market_cap": 102983961600,
+        "enterprise_value": 99982644600,
         "ey_rank": 178,
         "roc_rank": 102,
         "magic_rank": 162
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CHRW",
@@ -9197,15 +10394,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.7339,
-        "earnings_yield": 0.0325,
+        "earnings_yield": 0.0316,
         "ebit": 794961000,
-        "price": 193.5,
-        "market_cap": 23510637000,
-        "enterprise_value": 24439204000,
-        "ey_rank": 129,
+        "price": 199.61,
+        "market_cap": 24253014220,
+        "enterprise_value": 25181581220,
+        "ey_rank": 134,
         "roc_rank": 49,
-        "magic_rank": 80
-      }
+        "magic_rank": 85
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CHTR",
@@ -9216,15 +10416,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3372,
-        "earnings_yield": 0.115,
+        "earnings_yield": 0.1154,
         "ebit": 12908000000,
-        "price": 130.73,
-        "market_cap": 18007230763,
-        "enterprise_value": 112286230763,
+        "price": 127.91,
+        "market_cap": 17618793597,
+        "enterprise_value": 111897793597,
         "ey_rank": 8,
         "roc_rank": 120,
-        "magic_rank": 42
-      }
+        "magic_rank": 41
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CMCSA",
@@ -9235,15 +10438,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3349,
-        "earnings_yield": 0.1169,
+        "earnings_yield": 0.1178,
         "ebit": 20672000000,
-        "price": 23.57,
-        "market_cap": 87421130000,
-        "enterprise_value": 176877130000,
+        "price": 23.19,
+        "market_cap": 86011710000,
+        "enterprise_value": 175467710000,
         "ey_rank": 7,
         "roc_rank": 121,
-        "magic_rank": 43
-      }
+        "magic_rank": 42
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CMG",
@@ -9254,15 +10460,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6544,
-        "earnings_yield": 0.0412,
+        "earnings_yield": 0.0399,
         "ebit": 1935798000,
-        "price": 35.25,
-        "market_cap": 47327214000,
-        "enterprise_value": 46976669000,
-        "ey_rank": 98,
+        "price": 36.43,
+        "market_cap": 48911500880,
+        "enterprise_value": 48560955880,
+        "ey_rank": 105,
         "roc_rank": 63,
-        "magic_rank": 66
-      }
+        "magic_rank": 72
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CPRT",
@@ -9273,15 +10482,18 @@
       "mf_metrics": {
         "asof": "2025-07-31",
         "roc": 0.1957,
-        "earnings_yield": 0.0704,
+        "earnings_yield": 0.0703,
         "ebit": 1696714000,
-        "price": 27.515,
-        "market_cap": 26897645945,
-        "enterprise_value": 24117114945,
+        "price": 27.52,
+        "market_cap": 26902533760,
+        "enterprise_value": 24122002760,
         "ey_rank": 27,
         "roc_rank": 153,
         "magic_rank": 81
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CRL",
@@ -9294,13 +10506,16 @@
         "roc": 0.0127,
         "earnings_yield": 0.0019,
         "ebit": 25162000,
-        "price": 233.41,
-        "market_cap": 11568733240,
-        "enterprise_value": 13491489240,
+        "price": 231.21,
+        "market_cap": 11459692440,
+        "enterprise_value": 13382448440,
         "ey_rank": 194,
         "roc_rank": 193,
         "magic_rank": 193
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CSX",
@@ -9311,15 +10526,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1248,
-        "earnings_yield": 0.0411,
+        "earnings_yield": 0.0407,
         "ebit": 4521000000,
-        "price": 49.41,
-        "market_cap": 92544930000,
-        "enterprise_value": 110039930000,
-        "ey_rank": 100,
+        "price": 49.92,
+        "market_cap": 93500160000,
+        "enterprise_value": 110995160000,
+        "ey_rank": 103,
         "roc_rank": 175,
         "magic_rank": 161
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "CTSH",
@@ -9330,15 +10548,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.6656,
-        "earnings_yield": 0.1739,
+        "earnings_yield": 0.1719,
         "ebit": 3389000000,
-        "price": 42.57,
-        "market_cap": 20816730000,
-        "enterprise_value": 19491730000,
+        "price": 43.03,
+        "market_cap": 21041670000,
+        "enterprise_value": 19716670000,
         "ey_rank": 3,
         "roc_rank": 62,
         "magic_rank": 13
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DIS",
@@ -9349,15 +10570,18 @@
       "mf_metrics": {
         "asof": "2025-09-27",
         "roc": 0.5597,
-        "earnings_yield": 0.0838,
+        "earnings_yield": 0.0836,
         "ebit": 17551000000,
-        "price": 95.62,
-        "market_cap": 173167820000,
-        "enterprise_value": 209498820000,
+        "price": 95.87,
+        "market_cap": 173620570000,
+        "enterprise_value": 209951570000,
         "ey_rank": 18,
         "roc_rank": 73,
-        "magic_rank": 22
-      }
+        "magic_rank": 21
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "DVA",
@@ -9370,13 +10594,16 @@
         "roc": 0.548,
         "earnings_yield": 0.0753,
         "ebit": 2043615000,
-        "price": 232.8,
-        "market_cap": 17666028000,
-        "enterprise_value": 27153578000,
-        "ey_rank": 22,
+        "price": 232.41,
+        "market_cap": 17636432850,
+        "enterprise_value": 27123982850,
+        "ey_rank": 23,
         "roc_rank": 75,
-        "magic_rank": 24
-      }
+        "magic_rank": 23
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EFX",
@@ -9387,15 +10614,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.0852,
-        "earnings_yield": 0.0428,
+        "earnings_yield": 0.0427,
         "ebit": 1095200000,
-        "price": 166.44,
-        "market_cap": 20655204000,
-        "enterprise_value": 25567704000,
-        "ey_rank": 92,
+        "price": 166.93,
+        "market_cap": 20716013000,
+        "enterprise_value": 25628513000,
+        "ey_rank": 94,
         "roc_rank": 31,
-        "magic_rank": 37
-      }
+        "magic_rank": 39
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EOG",
@@ -9406,15 +10636,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1409,
-        "earnings_yield": 0.0821,
+        "earnings_yield": 0.0799,
         "ebit": 6385000000,
-        "price": 134.1,
-        "market_cap": 73218600000,
-        "enterprise_value": 77758600000,
-        "ey_rank": 20,
+        "price": 138.01,
+        "market_cap": 75353460000,
+        "enterprise_value": 79893460000,
+        "ey_rank": 21,
         "roc_rank": 169,
-        "magic_rank": 93
-      }
+        "magic_rank": 94
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EXE",
@@ -9425,15 +10658,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1014,
-        "earnings_yield": 0.0974,
+        "earnings_yield": 0.0969,
         "ebit": 2471000000,
-        "price": 87.25,
-        "market_cap": 20972282500,
-        "enterprise_value": 25365282500,
+        "price": 87.81,
+        "market_cap": 21106889700,
+        "enterprise_value": 25499889700,
         "ey_rank": 11,
         "roc_rank": 185,
-        "magic_rank": 102
-      }
+        "magic_rank": 100
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "EXPD",
@@ -9444,15 +10680,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4907,
-        "earnings_yield": 0.0476,
+        "earnings_yield": 0.0458,
         "ebit": 1052546000,
-        "price": 172.02,
-        "market_cap": 23437552980,
-        "enterprise_value": 22123267980,
-        "ey_rank": 82,
+        "price": 178.22,
+        "market_cap": 24282296780,
+        "enterprise_value": 22968011780,
+        "ey_rank": 85,
         "roc_rank": 82,
-        "magic_rank": 68
-      }
+        "magic_rank": 71
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FANG",
@@ -9463,15 +10702,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.0192,
-        "earnings_yield": 0.0188,
+        "earnings_yield": 0.0182,
         "ebit": 1266000000,
-        "price": 183.39,
-        "market_cap": 53014197810,
-        "enterprise_value": 67399197810,
-        "ey_rank": 169,
+        "price": 190.69,
+        "market_cap": 55124474510,
+        "enterprise_value": 69509474510,
+        "ey_rank": 170,
         "roc_rank": 192,
         "magic_rank": 190
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "FDX",
@@ -9482,15 +10724,18 @@
       "mf_metrics": {
         "asof": "2025-05-31",
         "roc": 0.1169,
-        "earnings_yield": 0.0574,
+        "earnings_yield": 0.0576,
         "ebit": 5217000000,
-        "price": 314.69,
-        "market_cap": 76469670000,
-        "enterprise_value": 90866670000,
-        "ey_rank": 50,
+        "price": 313.66,
+        "market_cap": 76219380000,
+        "enterprise_value": 90616380000,
+        "ey_rank": 54,
         "roc_rank": 180,
-        "magic_rank": 133
-      }
+        "magic_rank": 135
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "GD",
@@ -9501,15 +10746,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3576,
-        "earnings_yield": 0.0497,
+        "earnings_yield": 0.0504,
         "ebit": 5356000000,
-        "price": 375.06,
-        "market_cap": 102175720500,
-        "enterprise_value": 107855720500,
+        "price": 369.5,
+        "market_cap": 100661037500,
+        "enterprise_value": 106341037500,
         "ey_rank": 71,
         "roc_rank": 115,
-        "magic_rank": 90
-      }
+        "magic_rank": 91
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HAL",
@@ -9520,15 +10768,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2041,
-        "earnings_yield": 0.0659,
+        "earnings_yield": 0.0643,
         "ebit": 2260000000,
-        "price": 34.39,
-        "market_cap": 29334670000,
-        "enterprise_value": 34286670000,
-        "ey_rank": 31,
+        "price": 35.42,
+        "market_cap": 30213260000,
+        "enterprise_value": 35165260000,
+        "ey_rank": 35,
         "roc_rank": 150,
-        "magic_rank": 84
-      }
+        "magic_rank": 89
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HII",
@@ -9539,15 +10790,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.159,
-        "earnings_yield": 0.0499,
+        "earnings_yield": 0.0508,
         "ebit": 657000000,
-        "price": 286.09,
-        "market_cap": 11243337000,
-        "enterprise_value": 13169337000,
-        "ey_rank": 69,
+        "price": 280.0,
+        "market_cap": 11004000000,
+        "enterprise_value": 12930000000,
+        "ey_rank": 67,
         "roc_rank": 163,
-        "magic_rank": 135
-      }
+        "magic_rank": 133
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HPE",
@@ -9558,15 +10812,18 @@
       "mf_metrics": {
         "asof": "2025-10-31",
         "roc": -0.0688,
-        "earnings_yield": -0.0052,
+        "earnings_yield": -0.0051,
         "ebit": -437000000,
-        "price": 48.54,
-        "market_cap": 64266960000,
-        "enterprise_value": 84037960000,
-        "ey_rank": 199,
+        "price": 49.56,
+        "market_cap": 65617440000,
+        "enterprise_value": 85388440000,
+        "ey_rank": 198,
         "roc_rank": 202,
-        "magic_rank": 200
-      }
+        "magic_rank": 199
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HUM",
@@ -9577,15 +10834,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1452,
-        "earnings_yield": 0.0487,
+        "earnings_yield": 0.0472,
         "ebit": 2704000000,
-        "price": 392.22,
-        "market_cap": 47390373720,
-        "enterprise_value": 55559373720,
-        "ey_rank": 77,
+        "price": 406.77,
+        "market_cap": 49148392020,
+        "enterprise_value": 57317392020,
+        "ey_rank": 81,
         "roc_rank": 168,
-        "magic_rank": 145
-      }
+        "magic_rank": 147
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "HWM",
@@ -9596,15 +10856,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4447,
-        "earnings_yield": 0.0182,
+        "earnings_yield": 0.0178,
         "ebit": 2046000000,
-        "price": 270.85,
-        "market_cap": 109965100000,
-        "enterprise_value": 112273100000,
-        "ey_rank": 170,
+        "price": 276.78,
+        "market_cap": 112372680000,
+        "enterprise_value": 114680680000,
+        "ey_rank": 171,
         "roc_rank": 97,
         "magic_rank": 157
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "INTU",
@@ -9615,15 +10878,18 @@
       "mf_metrics": {
         "asof": "2025-07-31",
         "roc": 1.0479,
-        "earnings_yield": 0.0609,
+        "earnings_yield": 0.0593,
         "ebit": 4923000000,
-        "price": 274.96,
-        "market_cap": 77813680000,
-        "enterprise_value": 80902680000,
-        "ey_rank": 43,
+        "price": 282.43,
+        "market_cap": 79927690000,
+        "enterprise_value": 83016690000,
+        "ey_rank": 51,
         "roc_rank": 34,
-        "magic_rank": 16
-      }
+        "magic_rank": 19
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "JBHT",
@@ -9634,15 +10900,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1661,
-        "earnings_yield": 0.03,
+        "earnings_yield": 0.0299,
         "ebit": 865069000,
-        "price": 279.96,
-        "market_cap": 27348732480,
-        "enterprise_value": 28798245480,
-        "ey_rank": 141,
+        "price": 280.87,
+        "market_cap": 27437628560,
+        "enterprise_value": 28887141560,
+        "ey_rank": 142,
         "roc_rank": 162,
         "magic_rank": 174
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "KMI",
@@ -9653,15 +10922,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.1251,
-        "earnings_yield": 0.0457,
+        "earnings_yield": 0.0453,
         "ebit": 4724000000,
-        "price": 32.12,
-        "market_cap": 71402760000,
-        "enterprise_value": 103342760000,
+        "price": 32.54,
+        "market_cap": 72336420000,
+        "enterprise_value": 104276420000,
         "ey_rank": 86,
         "roc_rank": 174,
-        "magic_rank": 155
-      }
+        "magic_rank": 156
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LIN",
@@ -9672,14 +10944,34 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3382,
-        "earnings_yield": 0.0333,
+        "earnings_yield": 0.0338,
         "ebit": 8923000000,
-        "price": 529.79,
-        "market_cap": 250164189050,
-        "enterprise_value": 267587189050,
-        "ey_rank": 126,
+        "price": 522.54,
+        "market_cap": 246740775300,
+        "enterprise_value": 264163775300,
+        "ey_rank": 124,
         "roc_rank": 119,
-        "magic_rank": 146
+        "magic_rank": 143
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-12-31",
+        "current_ratio": 0.877,
+        "pe": 38.4,
+        "pb": 6.45,
+        "graham_number": 247.77,
+        "eps_growth": 1.5148,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -9691,15 +10983,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.0286,
-        "earnings_yield": 0.0149,
+        "earnings_yield": 0.0152,
         "ebit": 428000000,
-        "price": 48.43,
-        "market_cap": 27023940000,
-        "enterprise_value": 28721940000,
+        "price": 47.56,
+        "market_cap": 26538480000,
+        "enterprise_value": 28236480000,
         "ey_rank": 177,
         "roc_rank": 191,
         "magic_rank": 191
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LVS",
@@ -9710,15 +11005,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2294,
-        "earnings_yield": 0.0653,
+        "earnings_yield": 0.0673,
         "ebit": 2818000000,
-        "price": 46.69,
-        "market_cap": 32356170000,
-        "enterprise_value": 43171170000,
+        "price": 44.78,
+        "market_cap": 31032540000,
+        "enterprise_value": 41847540000,
         "ey_rank": 32,
         "roc_rank": 143,
-        "magic_rank": 77
-      }
+        "magic_rank": 76
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "LYV",
@@ -9729,15 +11027,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3722,
-        "earnings_yield": 0.0296,
+        "earnings_yield": 0.0294,
         "ebit": 1251217000,
-        "price": 179.79,
-        "market_cap": 41683286697,
-        "enterprise_value": 42201104697,
+        "price": 181.56,
+        "market_cap": 42093651108,
+        "enterprise_value": 42611469108,
         "ey_rank": 143,
         "roc_rank": 110,
-        "magic_rank": 152
-      }
+        "magic_rank": 151
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NOC",
@@ -9748,15 +11049,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3645,
-        "earnings_yield": 0.0507,
+        "earnings_yield": 0.0517,
         "ebit": 4511000000,
-        "price": 539.63,
-        "market_cap": 77598794000,
-        "enterprise_value": 88891794000,
-        "ey_rank": 64,
+        "price": 528.67,
+        "market_cap": 76022746000,
+        "enterprise_value": 87315746000,
+        "ey_rank": 63,
         "roc_rank": 113,
         "magic_rank": 79
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "NSC",
@@ -9769,13 +11073,16 @@
         "roc": 0.1213,
         "earnings_yield": 0.0488,
         "ebit": 4356000000,
-        "price": 327.47,
-        "market_cap": 73778991000,
-        "enterprise_value": 89335991000,
-        "ey_rank": 76,
+        "price": 326.83,
+        "market_cap": 73634799000,
+        "enterprise_value": 89191799000,
+        "ey_rank": 80,
         "roc_rank": 177,
-        "magic_rank": 153
-      }
+        "magic_rank": 154
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ODFL",
@@ -9786,15 +11093,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.2887,
-        "earnings_yield": 0.0283,
+        "earnings_yield": 0.0282,
         "ebit": 1361045000,
-        "price": 227.625,
-        "market_cap": 48164994750,
-        "enterprise_value": 48084898750,
+        "price": 228.61,
+        "market_cap": 48373418780,
+        "enterprise_value": 48293322780,
         "ey_rank": 146,
         "roc_rank": 135,
         "magic_rank": 164
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "ORCL",
@@ -9805,15 +11115,18 @@
       "mf_metrics": {
         "asof": "2026-05-31",
         "roc": 0.1967,
-        "earnings_yield": 0.0534,
+        "earnings_yield": 0.0591,
         "ebit": 20606000000,
-        "price": 140.64,
-        "market_cap": 409824960000,
-        "enterprise_value": 385734960000,
-        "ey_rank": 61,
+        "price": 127.94,
+        "market_cap": 372817160000,
+        "enterprise_value": 348727160000,
+        "ey_rank": 52,
         "roc_rank": 152,
-        "magic_rank": 119
-      }
+        "magic_rank": 113
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "PSKY",
@@ -9824,15 +11137,18 @@
       "mf_metrics": {
         "asof": "2024-12-31",
         "roc": -1.1769,
-        "earnings_yield": -0.2913,
+        "earnings_yield": -0.2944,
         "ebit": -5269000000,
-        "price": 9.41,
-        "market_cap": 6248240000,
-        "enterprise_value": 18088240000,
+        "price": 9.12,
+        "market_cap": 6055680000,
+        "enterprise_value": 17895680000,
         "ey_rank": 207,
         "roc_rank": 206,
         "magic_rank": 207
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RTX",
@@ -9843,15 +11159,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.505,
-        "earnings_yield": 0.0318,
+        "earnings_yield": 0.0321,
         "ebit": 9300000000,
-        "price": 195.93,
-        "market_cap": 265759452000,
-        "enterprise_value": 292816452000,
-        "ey_rank": 133,
+        "price": 193.39,
+        "market_cap": 262314196000,
+        "enterprise_value": 289371196000,
+        "ey_rank": 131,
         "roc_rank": 78,
         "magic_rank": 115
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "RVTY",
@@ -9862,15 +11181,18 @@
       "mf_metrics": {
         "asof": "2025-12-28",
         "roc": 0.257,
-        "earnings_yield": 0.0232,
+        "earnings_yield": 0.0234,
         "ebit": 356635000,
-        "price": 112.29,
-        "market_cap": 13092452550,
-        "enterprise_value": 15392656550,
+        "price": 111.21,
+        "market_cap": 12966529950,
+        "enterprise_value": 15266733950,
         "ey_rank": 160,
         "roc_rank": 142,
         "magic_rank": 173
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "SBUX",
@@ -9881,14 +11203,34 @@
       "mf_metrics": {
         "asof": "2025-09-28",
         "roc": 0.5183,
-        "earnings_yield": 0.022,
+        "earnings_yield": 0.0219,
         "ebit": 2936600000,
-        "price": 106.01,
-        "market_cap": 120830198000,
-        "enterprise_value": 133685198000,
-        "ey_rank": 161,
+        "price": 106.17,
+        "market_cap": 121012566000,
+        "enterprise_value": 133867566000,
+        "ey_rank": 162,
         "roc_rank": 77,
         "magic_rank": 139
+      },
+      "graham_score": 4,
+      "graham_signals": {
+        "adequate_size": 1,
+        "strong_financial_condition": 0,
+        "earnings_stability": 1,
+        "dividend_record": 1,
+        "earnings_growth": 1,
+        "moderate_pe": 0,
+        "moderate_valuation": 0
+      },
+      "graham_metrics": {
+        "asof": "2025-09-28",
+        "current_ratio": 0.723,
+        "pe": 37.39,
+        "pb": null,
+        "graham_number": null,
+        "eps_growth": 0.1755,
+        "earnings_years_checked": 7,
+        "dividend_years_checked": 5
       }
     },
     {
@@ -9900,15 +11242,18 @@
       "mf_metrics": {
         "asof": "2025-06-27",
         "roc": -0.3219,
-        "earnings_yield": -0.005,
+        "earnings_yield": -0.0054,
         "ebit": -1377000000,
-        "price": 1915.92,
-        "market_cap": 277808400000,
-        "enterprise_value": 278176400000,
-        "ey_rank": 198,
+        "price": 1757.82,
+        "market_cap": 254883900000,
+        "enterprise_value": 255251900000,
+        "ey_rank": 199,
         "roc_rank": 205,
-        "magic_rank": 201
-      }
+        "magic_rank": 204
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TKO",
@@ -9921,13 +11266,16 @@
         "roc": 0.7443,
         "earnings_yield": 0.0216,
         "ebit": 835015000,
-        "price": 184.4,
-        "market_cap": 35775641677,
-        "enterprise_value": 38706665677,
+        "price": 184.56,
+        "market_cap": 35806683448,
+        "enterprise_value": 38737707448,
         "ey_rank": 163,
         "roc_rank": 48,
-        "magic_rank": 116
-      }
+        "magic_rank": 117
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TMO",
@@ -9938,15 +11286,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.3216,
-        "earnings_yield": 0.0334,
+        "earnings_yield": 0.033,
         "ebit": 7746000000,
-        "price": 527.05,
-        "market_cap": 199224900000,
-        "enterprise_value": 232077900000,
-        "ey_rank": 125,
+        "price": 534.07,
+        "market_cap": 201878460000,
+        "enterprise_value": 234731460000,
+        "ey_rank": 126,
         "roc_rank": 126,
         "magic_rank": 150
-      }
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TMUS",
@@ -9957,15 +11308,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 0.4773,
-        "earnings_yield": 0.0624,
+        "earnings_yield": 0.0625,
         "ebit": 18279000000,
-        "price": 187.61,
-        "market_cap": 212201215450,
-        "enterprise_value": 292885215450,
-        "ey_rank": 38,
+        "price": 187.13,
+        "market_cap": 211658298850,
+        "enterprise_value": 292342298850,
+        "ey_rank": 39,
         "roc_rank": 86,
-        "magic_rank": 39
-      }
+        "magic_rank": 40
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TPL",
@@ -9976,15 +11330,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.4399,
-        "earnings_yield": 0.0217,
+        "earnings_yield": 0.0207,
         "ebit": 592161000,
-        "price": 397.82,
-        "market_cap": 27460516867,
-        "enterprise_value": 27315707867,
-        "ey_rank": 162,
+        "price": 415.93,
+        "market_cap": 28710604748,
+        "enterprise_value": 28565795748,
+        "ey_rank": 166,
         "roc_rank": 18,
-        "magic_rank": 82
-      }
+        "magic_rank": 87
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     },
     {
       "symbol": "TT",
@@ -9995,15 +11352,18 @@
       "mf_metrics": {
         "asof": "2025-12-31",
         "roc": 1.0365,
-        "earnings_yield": 0.0358,
+        "earnings_yield": 0.0355,
         "ebit": 3967400000,
-        "price": 479.7,
-        "market_cap": 107884530000,
-        "enterprise_value": 110736330000,
-        "ey_rank": 118,
+        "price": 483.55,
+        "market_cap": 108750395000,
+        "enterprise_value": 111602195000,
+        "ey_rank": 121,
         "roc_rank": 35,
-        "magic_rank": 55
-      }
+        "magic_rank": 58
+      },
+      "graham_score": null,
+      "graham_signals": null,
+      "graham_metrics": null
     }
   ]
 }

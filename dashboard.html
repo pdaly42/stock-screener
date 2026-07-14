@@ -163,6 +163,7 @@
         <div class="model-toggle" id="modelToggle">
           <button data-model="fscore" class="active">Piotroski F-Score</button>
           <button data-model="magic">Magic Formula</button>
+          <button data-model="graham">Graham Defensive</button>
         </div>
       </div>
       <p class="model-description" id="modelDescription"></p>
@@ -172,9 +173,9 @@
         <label>Ticker search</label>
         <input type="text" id="searchInput" placeholder="e.g. AAPL">
       </div>
-      <div class="control-group">
-        <label>Min F-Score</label>
-        <input type="number" id="minFscore" min="0" max="9" value="0" style="min-width:70px">
+      <div class="control-group" id="minScoreGroup">
+        <label id="minScoreLabel">Min F-Score</label>
+        <input type="number" id="minScoreInput" min="0" max="9" value="0" style="min-width:70px">
       </div>
       <button class="clear-btn" id="clearFilters">Clear filters</button>
     </div>
@@ -198,9 +199,9 @@
 <script>
 const state = {
   data: null,
-  model: 'fscore',           // 'fscore' | 'magic'
+  model: 'fscore',           // 'fscore' | 'magic' | 'graham'
   search: '',
-  minFscore: 0,
+  minScore: 0,
   sectors: new Set(),        // empty set = all sectors
   sortKey: null,
   sortDir: 'desc',
@@ -210,6 +211,16 @@ const state = {
 const MODEL_DESCRIPTIONS = {
   fscore: 'A 9-point checklist (Piotroski, 2000) that scores fundamentally improving companies across profitability, leverage/liquidity, and operating efficiency trends over 3 years — higher is stronger.',
   magic: '(Greenblatt) Ranks companies by combining quality (Return on Capital) and cheapness (Earnings Yield) to surface good businesses trading at good prices — rank #1 is best.',
+  graham: '(Graham) A 7-point margin-of-safety checklist from The Intelligent Investor — size, balance-sheet strength, a multi-year earnings/dividend record, and a moderate price relative to earnings and book value — higher is stronger. Lookback windows are relaxed from Graham’s original 10yr/20yr to fit what SEC data supports.',
+};
+
+// Min-score input behaves differently per model: F-Score and Graham are
+// additive point scores (filterable by a minimum), Magic Formula is an
+// ordinal rank across the universe with no natural "minimum" to set.
+const MIN_SCORE_CONFIG = {
+  fscore: { label: 'Min F-Score', max: 9, enabled: true },
+  magic:  { label: 'Min Score (n/a)', max: 9, enabled: false },
+  graham: { label: 'Min Graham Score', max: 7, enabled: true },
 };
 
 const COLUMNS = {
@@ -231,6 +242,16 @@ const COLUMNS = {
     { key: 'earnings_yield', label: 'Earnings Yield' },
     { key: 'price', label: 'Price' },
     { key: 'market_cap', label: 'Market Cap' },
+    { key: 'asof', label: 'As Of' },
+  ],
+  graham: [
+    { key: 'symbol', label: 'Symbol' },
+    { key: 'sector', label: 'Sector' },
+    { key: 'graham_score', label: 'Graham Score' },
+    { key: 'graham_current_ratio', label: 'Current Ratio' },
+    { key: 'pe', label: 'P/E' },
+    { key: 'pb', label: 'P/B' },
+    { key: 'graham_number', label: 'Graham #' },
     { key: 'asof', label: 'As Of' },
   ],
 };
@@ -260,8 +281,14 @@ function rowValue(r, key) {
     case 'earnings_yield': return r.mf_metrics ? r.mf_metrics.earnings_yield : null;
     case 'price': return r.mf_metrics ? r.mf_metrics.price : null;
     case 'market_cap': return r.mf_metrics ? r.mf_metrics.market_cap : null;
+    case 'graham_score': return r.graham_score;
+    case 'graham_current_ratio': return r.graham_metrics ? r.graham_metrics.current_ratio : null;
+    case 'pe': return r.graham_metrics ? r.graham_metrics.pe : null;
+    case 'pb': return r.graham_metrics ? r.graham_metrics.pb : null;
+    case 'graham_number': return r.graham_metrics ? r.graham_metrics.graham_number : null;
     case 'asof':
       if (state.model === 'fscore') return r.f_metrics ? r.f_metrics.asof : null;
+      if (state.model === 'graham') return r.graham_metrics ? r.graham_metrics.asof : null;
       return r.mf_metrics ? r.mf_metrics.asof : null;
     default: return null;
   }
@@ -272,10 +299,12 @@ function formatCell(key, v) {
   switch (key) {
     case 'symbol': return { text: v, cls: 'symbol' };
     case 'sector': return { text: v, cls: 'sector' };
-    case 'fscore': return { html: fscoreBadge(v), cls: '' };
+    case 'fscore': return { html: scoreBadge(v, 9, 7, 4), cls: '' };
+    case 'graham_score': return { html: scoreBadge(v, 7, 6, 4), cls: '' };
     case 'roa': case 'gross_margin': case 'leverage_ratio': case 'roc': case 'earnings_yield':
       return { text: fmtPct(v), cls: 'num' };
-    case 'current_ratio': return { text: fmtNum(v), cls: 'num' };
+    case 'current_ratio': case 'graham_current_ratio': case 'pe': case 'pb': case 'graham_number':
+      return { text: fmtNum(v), cls: 'num' };
     case 'price': return { text: '$' + fmtNum(v), cls: 'num' };
     case 'market_cap': return { text: fmtMoney(v), cls: 'num' };
     case 'magic_rank': return { text: '#' + v, cls: 'num' };
@@ -284,24 +313,28 @@ function formatCell(key, v) {
   }
 }
 
-function fscoreBadge(score) {
-  const cls = score >= 7 ? 'strong' : score >= 4 ? 'mid' : 'weak';
-  return `<span class="badge ${cls}">${score}/9</span>`;
+function scoreBadge(score, max, strongMin, midMin) {
+  const cls = score >= strongMin ? 'strong' : score >= midMin ? 'mid' : 'weak';
+  return `<span class="badge ${cls}">${score}/${max}</span>`;
 }
+
+const DEFAULT_SORT_KEY = { fscore: 'fscore', magic: 'magic_rank', graham: 'graham_score' };
 
 function applyFilters(results) {
   return results.filter(r => {
     if (state.model === 'fscore' && r.fscore === null) return false;
     if (state.model === 'magic' && !r.mf_metrics) return false;
+    if (state.model === 'graham' && r.graham_score === null) return false;
     if (state.search && !r.symbol.includes(state.search.toUpperCase())) return false;
-    if (state.model === 'fscore' && r.fscore < state.minFscore) return false;
+    if (state.model === 'fscore' && r.fscore < state.minScore) return false;
+    if (state.model === 'graham' && r.graham_score < state.minScore) return false;
     if (state.sectors.size > 0 && !state.sectors.has(r.sector)) return false;
     return true;
   });
 }
 
 function sortRows(rows) {
-  const key = state.sortKey || (state.model === 'fscore' ? 'fscore' : 'magic_rank');
+  const key = state.sortKey || DEFAULT_SORT_KEY[state.model];
   const dir = state.sortDir === 'asc' ? 1 : -1;
   return [...rows].sort((a, b) => {
     let av = rowValue(a, key), bv = rowValue(b, key);
@@ -315,7 +348,7 @@ function sortRows(rows) {
 
 function renderHead() {
   const cols = COLUMNS[state.model];
-  const activeKey = state.sortKey || (state.model === 'fscore' ? 'fscore' : 'magic_rank');
+  const activeKey = state.sortKey || DEFAULT_SORT_KEY[state.model];
   const head = document.getElementById('tableHead');
   head.innerHTML = cols.map(c => {
     const sorted = c.key === activeKey;
@@ -379,6 +412,16 @@ const SIGNAL_LABELS = {
   higher_asset_turnover: 'Higher asset turnover',
 };
 
+const GRAHAM_SIGNAL_LABELS = {
+  adequate_size: 'Adequate size (revenue)',
+  strong_financial_condition: 'Current ratio ≥ 2 & low debt',
+  earnings_stability: 'Positive earnings, full window',
+  dividend_record: 'Uninterrupted dividends, full window',
+  earnings_growth: 'EPS growth over window',
+  moderate_pe: 'Moderate P/E (≤ 15)',
+  moderate_valuation: 'Moderate valuation (Graham # ≤ 22.5)',
+};
+
 function renderDetail(r) {
   let fBlock = '<div class="detail-block"><h4>F-Score signals</h4><div style="color:var(--muted);font-size:0.8rem;">not scored</div></div>';
   if (r.f_signals) {
@@ -403,7 +446,23 @@ function renderDetail(r) {
     </ul></div>`;
   }
 
-  return `<div class="detail-grid">${fBlock}${mBlock}</div>`;
+  let gBlock = '<div class="detail-block"><h4>Graham Defensive Investor</h4><div style="color:var(--muted);font-size:0.8rem;">not scored (insufficient history or missing data)</div></div>';
+  if (r.graham_signals) {
+    const items = Object.entries(r.graham_signals).map(([k, v]) =>
+      `<li><span>${GRAHAM_SIGNAL_LABELS[k] || k}</span><span class="${v ? 'yes' : 'no'}">${v ? 'YES' : 'no'}</span></li>`
+    ).join('');
+    const m = r.graham_metrics;
+    gBlock = `<div class="detail-block"><h4>Graham signals (${r.graham_score}/7)</h4><ul class="signal-list">${items}</ul>
+      <ul class="metric-list" style="margin-top:8px;">
+        <li><span>P/E</span><span class="v">${fmtNum(m.pe)}</span></li>
+        <li><span>P/B</span><span class="v">${fmtNum(m.pb)}</span></li>
+        <li><span>Graham Number</span><span class="v">${fmtNum(m.graham_number)}</span></li>
+        <li><span>EPS growth (window)</span><span class="v">${fmtPct(m.eps_growth)}</span></li>
+        <li><span>Years checked</span><span class="v">${m.earnings_years_checked} earnings / ${m.dividend_years_checked} dividend</span></li>
+      </ul></div>`;
+  }
+
+  return `<div class="detail-grid">${fBlock}${mBlock}${gBlock}</div>`;
 }
 
 function renderSummary() {
@@ -413,6 +472,7 @@ function renderSummary() {
     <div class="summary-card"><div class="label">Universe</div><div class="value">${d.universe_size}</div></div>
     <div class="summary-card"><div class="label">F-Score scored</div><div class="value">${d.scored_f_score}</div></div>
     <div class="summary-card"><div class="label">Magic Formula scored</div><div class="value">${d.scored_magic_formula}</div></div>
+    <div class="summary-card"><div class="label">Graham scored</div><div class="value">${d.scored_graham}</div></div>
   `;
 }
 
@@ -450,13 +510,14 @@ async function init() {
   state.data = data;
 
   document.getElementById('hdrSubtitle').textContent =
-    `Piotroski F-Score + Greenblatt Magic Formula — SEC EDGAR + Yahoo Finance`;
+    `Piotroski F-Score + Greenblatt Magic Formula + Graham Defensive Investor — SEC EDGAR + Yahoo Finance`;
   document.getElementById('hdrRight').textContent =
     `Generated ${new Date(data.generated_at).toLocaleString()}`;
   document.getElementById('footer').textContent =
     `Data: ${data.data_source}. Fundamentals from SEC EDGAR XBRL filings; price from Yahoo Finance. Not investment advice.`;
 
   renderSummary();
+  updateMinScoreControl();
 
   document.getElementById('modelToggle').addEventListener('click', e => {
     const btn = e.target.closest('button[data-model]');
@@ -465,7 +526,10 @@ async function init() {
     state.sortKey = null;
     state.sortDir = state.model === 'magic' ? 'asc' : 'desc';
     state.expanded = null;
+    state.minScore = 0;
+    document.getElementById('minScoreInput').value = 0;
     document.querySelectorAll('#modelToggle button').forEach(b => b.classList.toggle('active', b === btn));
+    updateMinScoreControl();
     render();
   });
 
@@ -473,18 +537,27 @@ async function init() {
     state.search = e.target.value.trim();
     render();
   });
-  document.getElementById('minFscore').addEventListener('input', e => {
-    state.minFscore = Number(e.target.value) || 0;
+  document.getElementById('minScoreInput').addEventListener('input', e => {
+    state.minScore = Number(e.target.value) || 0;
     render();
   });
   document.getElementById('clearFilters').addEventListener('click', () => {
-    state.search = ''; state.minFscore = 0; state.sectors.clear();
+    state.search = ''; state.minScore = 0; state.sectors.clear();
     document.getElementById('searchInput').value = '';
-    document.getElementById('minFscore').value = 0;
+    document.getElementById('minScoreInput').value = 0;
     render();
   });
 
   render();
+}
+
+function updateMinScoreControl() {
+  const cfg = MIN_SCORE_CONFIG[state.model];
+  document.getElementById('minScoreLabel').textContent = cfg.label;
+  const input = document.getElementById('minScoreInput');
+  input.max = cfg.max;
+  input.disabled = !cfg.enabled;
+  document.getElementById('minScoreGroup').style.opacity = cfg.enabled ? '1' : '0.5';
 }
 
 init();
