@@ -97,6 +97,26 @@
     font-weight: 600; cursor: pointer; padding: 7px 4px;
   }
 
+  .histogram-card {
+    background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
+    padding: 16px 20px; margin-bottom: 18px;
+  }
+  .histogram-card h4 {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 700; margin-bottom: 12px;
+  }
+  .histogram-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.8rem; }
+  .histogram-row:last-child { margin-bottom: 0; }
+  .histogram-label { width: 100px; flex-shrink: 0; font-weight: 600; color: var(--text); text-align: right; text-transform: capitalize; }
+  .histogram-bar-track { flex: 1; background: #f1f5f9; border-radius: 4px; height: 16px; overflow: hidden; }
+  .histogram-bar-fill { background: var(--blue); height: 100%; border-radius: 4px; transition: width 0.2s; }
+  .histogram-count { width: 36px; flex-shrink: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .histogram-empty { color: var(--muted); font-size: 0.8rem; }
+  .histogram-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+  .histogram-stats .stat { display: flex; flex-direction: column; gap: 2px; }
+  .histogram-stats .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
+  .histogram-stats .stat-value { font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
   .table-wrap {
     background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
     overflow: hidden;
@@ -185,6 +205,11 @@
       <label>Sectors</label>
       <div class="sector-chips" id="sectorChips"></div>
     </div>
+  </div>
+
+  <div class="histogram-card" id="histogramCard">
+    <h4 id="histogramTitle">Score Distribution</h4>
+    <div id="histogramBody"></div>
   </div>
 
   <div class="table-wrap">
@@ -561,8 +586,78 @@ function renderSectorChips() {
   });
 }
 
+const MODEL_LABEL = { fscore: 'Piotroski F-Score', magic: 'Magic Formula', graham: 'Graham Defensive Investor', lynch: 'Lynch PEG' };
+const LYNCH_RATING_ORDER = ['excellent', 'attractive', 'fair', 'expensive'];
+
+function median(sortedArr) {
+  const n = sortedArr.length;
+  if (n === 0) return null;
+  return n % 2 === 0 ? (sortedArr[n / 2 - 1] + sortedArr[n / 2]) / 2 : sortedArr[(n - 1) / 2];
+}
+
+function histogramPopulation() {
+  // Everyone the current model scored, narrowed by the sector filter --
+  // deliberately ignores ticker search and Min Score so the distribution
+  // always reflects the full scored population (or the sector slice of
+  // it), not whatever one name someone happens to be looking up.
+  return state.data.results.filter(r => {
+    if (!isScored(r)) return false;
+    if (state.sectors.size > 0 && !state.sectors.has(r.sector)) return false;
+    return true;
+  });
+}
+
+function renderHistogramBars(rows, formatLabel) {
+  const maxCount = Math.max(...rows.map(r => r.count), 1);
+  return rows.map(({ label, count }) => {
+    const pct = (count / maxCount) * 100;
+    return `<div class="histogram-row">
+      <div class="histogram-label">${formatLabel(label)}</div>
+      <div class="histogram-bar-track"><div class="histogram-bar-fill" style="width:${pct}%"></div></div>
+      <div class="histogram-count">${count}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistogram() {
+  const sectorNote = state.sectors.size > 0 ? ` — ${[...state.sectors].join(', ')}` : '';
+  document.getElementById('histogramTitle').textContent = `Score Distribution — ${MODEL_LABEL[state.model]}${sectorNote}`;
+
+  const body = document.getElementById('histogramBody');
+  const pop = histogramPopulation();
+  if (pop.length === 0) {
+    body.innerHTML = `<div class="histogram-empty">No companies scored by ${MODEL_LABEL[state.model]} match the current sector filter.</div>`;
+    return;
+  }
+
+  if (state.model === 'fscore' || state.model === 'graham') {
+    const max = state.model === 'fscore' ? 9 : 7;
+    const key = state.model === 'fscore' ? 'fscore' : 'graham_score';
+    const counts = Array.from({ length: max + 1 }, () => 0);
+    pop.forEach(r => counts[r[key]]++);
+    const rows = counts.map((count, score) => ({ label: score, count })).reverse();
+    body.innerHTML = renderHistogramBars(rows, score => `${score}/${max}`);
+  } else if (state.model === 'lynch') {
+    const counts = { excellent: 0, attractive: 0, fair: 0, expensive: 0 };
+    pop.forEach(r => counts[r.lynch_metrics.rating]++);
+    const rows = LYNCH_RATING_ORDER.map(rating => ({ label: rating, count: counts[rating] }));
+    body.innerHTML = renderHistogramBars(rows, rating => rating);
+  } else if (state.model === 'magic') {
+    const rocVals = pop.map(r => r.mf_metrics.roc).sort((a, b) => a - b);
+    const eyVals = pop.map(r => r.mf_metrics.earnings_yield).sort((a, b) => a - b);
+    body.innerHTML = `<div class="histogram-stats">
+      <div class="stat"><div class="stat-label">Companies ranked</div><div class="stat-value">${pop.length}</div></div>
+      <div class="stat"><div class="stat-label">Median ROC</div><div class="stat-value">${fmtPct(median(rocVals))}</div></div>
+      <div class="stat"><div class="stat-label">Median EY</div><div class="stat-value">${fmtPct(median(eyVals))}</div></div>
+      <div class="stat"><div class="stat-label">ROC range</div><div class="stat-value">${fmtPct(rocVals[0])} to ${fmtPct(rocVals[rocVals.length - 1])}</div></div>
+      <div class="stat"><div class="stat-label">EY range</div><div class="stat-value">${fmtPct(eyVals[0])} to ${fmtPct(eyVals[eyVals.length - 1])}</div></div>
+    </div>`;
+  }
+}
+
 function render() {
   renderModelDescription();
+  renderHistogram();
   renderHead();
   const filtered = applyFilters(state.data.results);
   const sorted = sortRows(filtered);
