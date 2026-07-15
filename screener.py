@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 screener.py  --  stock screener: Piotroski F-Score + Greenblatt Magic Formula
-                  + Graham Defensive Investor
+                  + Graham Defensive Investor + Peter Lynch's PEG Ratio
 
 WHAT THIS IS
 ------------
@@ -10,9 +10,10 @@ EDGAR's XBRL data (the same filings companies submit with their 10-Ks),
 caches them locally so re-runs are free, computes each company's Piotroski
 F-Score (a fully mechanical, 9-point quality signal), Greenblatt Magic
 Formula rank (cheapness + quality via Return on Capital and Earnings Yield),
-and Graham Defensive Investor score (Benjamin Graham's 7-point margin-of-
-safety checklist from The Intelligent Investor), then writes a ranked
-results.json that a webpage front end can read later.
+Graham Defensive Investor score (Benjamin Graham's 7-point margin-of-safety
+checklist from The Intelligent Investor), and Peter Lynch's PEG Ratio rank
+(P/E relative to trailing EPS growth), then writes a ranked results.json
+that a webpage front end can read later.
 
 WHY PIOTROSKI FIRST
 -------------------
@@ -51,6 +52,24 @@ XBRL data reliably covers roughly a decade for most filers -- a strict
 This is a real, deliberate simplification, not an oversight -- it trades
 Graham's literal thresholds for something the data can actually support
 while keeping the spirit of each rule intact.
+
+WHY LYNCH'S PEG RATIO FOURTH
+------------------------------
+Graham's checklist has a structural weakness: it uses absolute valuation
+thresholds (P/E <= 15, Graham Number <= 22.5), so in a richly-valued market
+the count of names passing can go to zero regardless of how the lookback
+windows are tuned -- and in practice, across the S&P 500, it does. Peter
+Lynch's PEG Ratio (P/E divided by trailing EPS growth, as a whole-number
+percent) fixes this two ways: it needs a much shorter earnings history
+(LYNCH_GROWTH_YEARS = 5, vs. Graham's 7) so more companies are even
+eligible, and rather than a pass/fail bar, every qualifying company is
+*ranked* by PEG (same mechanism as Magic Formula) so the site always
+surfaces a full list. Lynch's own descriptive bands (PEG < 0.5 "excellent",
+< 1.0 "attractive", < 1.5 "fair", else "expensive", from "One Up On Wall
+Street") are shown for color but never used to filter anyone out.
+Simplification: growth is a trailing 5-year EPS CAGR, since SEC data has no
+forward analyst estimates -- Lynch himself worked from his own forward
+growth estimates, which isn't something a mechanical screen can replicate.
 
 WHY SEC EDGAR (not a paid data vendor)
 ---------------------------------------
@@ -141,6 +160,20 @@ GRAHAM_MAX_PB = 1.5              # rule 7: price <= 1.5x book value
 GRAHAM_MAX_GRAHAM_NUMBER = 22.5  # Graham's own shortcut: PE x PB <= 22.5 satisfies rules 6+7 together
 GRAHAM_MIN_EPS_GROWTH = 0.15     # relaxed from 33%/10yr given our shorter window
 
+# Peter Lynch's PEG Ratio: P/E divided by the trailing EPS growth rate (as a
+# whole number, e.g. 15 for 15% growth). Lynch's own rule of thumb from
+# "One Up On Wall Street": PEG < 1 is attractive, < 0.5 is excellent. Unlike
+# Graham, this isn't a hard pass/fail gate here -- every qualifying company
+# gets *ranked* by PEG (ascending, lowest = best), same mechanism as Magic
+# Formula, so the site always surfaces a full list instead of the whole
+# universe scoring zero when the market is expensive. Growth is a trailing
+# 5-year EPS CAGR (no analyst forward estimates available from SEC data),
+# a meaningfully shorter/more available window than Graham's 7-10 years.
+LYNCH_GROWTH_YEARS = 5
+LYNCH_EXCELLENT_PEG = 0.5
+LYNCH_ATTRACTIVE_PEG = 1.0
+LYNCH_FAIR_PEG = 1.5
+
 # A small starter universe; swap in the full S&P 500 whenever you like --
 # there's no daily call budget to ration against with SEC EDGAR.
 DEFAULT_UNIVERSE = [
@@ -174,7 +207,15 @@ XBRL_FIELD_SPECS = {
         "CostOfServices",
         "CostOfGoodsSold",
     ], "USD", False),
-    "net_income": (["NetIncomeLoss", "ProfitLoss"], "USD", False),
+    "net_income": ([
+        "NetIncomeLoss",
+        "ProfitLoss",
+        # Fallback: some filers (e.g. Booking Holdings) stop tagging plain
+        # NetIncomeLoss in their 10-Ks at some point and only tag this
+        # "available to common stockholders" variant going forward -- close
+        # enough for a screen when a company has no preferred stock.
+        "NetIncomeLossAvailableToCommonStockholdersBasic",
+    ], "USD", False),
     "shares": ([
         "WeightedAverageNumberOfDilutedSharesOutstanding",
         "WeightedAverageNumberOfSharesOutstandingBasic",
@@ -663,6 +704,46 @@ def normalize_for_graham(facts):
 
     return years, None
 
+def normalize_for_lynch(facts):
+    """Return (years, reason). `years` is up to LYNCH_GROWTH_YEARS yearly
+    {date, net_income, shares} dicts, newest first, for PEG's trailing EPS
+    growth rate; `reason` is None on success (a full window) or a human-
+    readable explanation otherwise. Deliberately reuses only net_income and
+    shares -- both already fetched for every other model -- so this adds no
+    new XBRL fields and no new network calls."""
+    gaap = facts.get("facts", {}).get("us-gaap", {})
+
+    ni_candidates, ni_unit, ni_instant = XBRL_FIELD_SPECS["net_income"]
+    sh_candidates, sh_unit, sh_instant = XBRL_FIELD_SPECS["shares"]
+    _, net_income = extract_field(gaap, ni_candidates, ni_unit, ni_instant)
+    _, shares = extract_field(gaap, sh_candidates, sh_unit, sh_instant)
+
+    common_dates = sorted(set(net_income) & set(shares), reverse=True)[:LYNCH_GROWTH_YEARS]
+    if len(common_dates) < LYNCH_GROWTH_YEARS:
+        return [], (f"only {len(common_dates)} fiscal year(s) of clean EPS history available "
+                     f"(need {LYNCH_GROWTH_YEARS})")
+
+    # A filer can switch which net_income tag it uses (e.g. Booking Holdings
+    # stopped tagging plain NetIncomeLoss in its 10-Ks after 2015), which
+    # would otherwise silently produce a "growth window" of ancient years
+    # even though shares data is current. Every other model already guards
+    # against exactly this kind of staleness -- Lynch needs the same check.
+    try:
+        age_days = (date.today() - date.fromisoformat(common_dates[0])).days
+    except ValueError:
+        age_days = None
+    if age_days is not None and age_days > STALE_DATA_MAX_AGE_DAYS:
+        return [], (f"most recent overlapping net_income/shares year ({common_dates[0]}) is more "
+                     f"than {STALE_DATA_MAX_AGE_DAYS} days old -- likely a filer tag change, not a real gap")
+
+    years = [{"date": d, "net_income": net_income[d], "shares": shares[d]} for d in common_dates]
+
+    # Same MIN_PLAUSIBLE_SHARES filer-tagging bug as Magic Formula/Graham.
+    if any(y["shares"] < MIN_PLAUSIBLE_SHARES for y in years):
+        return [], "implausible share count in one or more years (likely a filer tagging error)"
+
+    return years, None
+
 # ----------------------------------------------------------------------------
 # THE MODEL: Piotroski F-Score  (pure function -- no network, easy to test)
 # ----------------------------------------------------------------------------
@@ -850,6 +931,57 @@ def compute_graham(years, price):
     return score, s, metrics
 
 # ----------------------------------------------------------------------------
+# THE MODEL: Peter Lynch's PEG Ratio  (pure function -- no network, easy to test)
+# ----------------------------------------------------------------------------
+# PEG = P/E / trailing EPS growth rate (whole-number percent, e.g. 15 for
+# 15%). Lower is better -- ranked across the universe in screen(), same
+# mechanism as Magic Formula, so this always produces a full ranked list
+# rather than an absolute bar the whole market can fail. `rating` is
+# Lynch's own descriptive bands (excellent/attractive/fair/expensive),
+# shown for color but not used to filter anyone out.
+
+def compute_lynch_peg(years, price):
+    """`years` = normalize_for_lynch() output (newest first, >= 2 needed for
+    a growth rate), `price` = current share price. Returns (metrics_dict,
+    None) or (None, reason)."""
+    if len(years) < 2:
+        return None, "insufficient_years"
+
+    eps_newest = _safe_div(years[0]["net_income"], years[0]["shares"])
+    eps_oldest = _safe_div(years[-1]["net_income"], years[-1]["shares"])
+    if eps_newest is None or eps_newest <= 0:
+        return None, "negative or zero trailing EPS -- P/E isn't meaningful"
+    if eps_oldest is None or eps_oldest <= 0:
+        return None, "negative or zero EPS at the start of the growth window -- growth rate isn't meaningful"
+
+    n_periods = len(years) - 1
+    growth_rate = (eps_newest / eps_oldest) ** (1 / n_periods) - 1
+    if growth_rate <= 0:
+        return None, "flat or declining EPS over the trailing window -- PEG isn't meaningful without positive growth"
+
+    pe = price / eps_newest
+    peg = pe / (growth_rate * 100)
+
+    if peg < LYNCH_EXCELLENT_PEG:
+        rating = "excellent"
+    elif peg < LYNCH_ATTRACTIVE_PEG:
+        rating = "attractive"
+    elif peg < LYNCH_FAIR_PEG:
+        rating = "fair"
+    else:
+        rating = "expensive"
+
+    return {
+        "asof": years[0]["date"],
+        "eps": round(eps_newest, 2),
+        "eps_growth": round(growth_rate, 4),
+        "pe": round(pe, 2),
+        "peg": round(peg, 3),
+        "rating": rating,
+        "years_checked": len(years),
+    }, None
+
+# ----------------------------------------------------------------------------
 # RUNNER
 # ----------------------------------------------------------------------------
 
@@ -863,6 +995,7 @@ def _empty_row(symbol, sector, reason):
         "fscore": None, "f_signals": None, "f_metrics": None, "f_skip_reason": reason,
         "mf_metrics": None, "mf_skip_reason": reason,
         "graham_score": None, "graham_signals": None, "graham_metrics": None, "graham_skip_reason": reason,
+        "lynch_metrics": None, "lynch_skip_reason": reason,
     }
 
 def screen(tickers, refresh=False):
@@ -933,6 +1066,16 @@ def screen(tickers, refresh=False):
             else:
                 graham_score, graham_signals, graham_metrics = g_score, g_signals, g_metrics
 
+        lynch_metrics, lynch_skip_reason = None, None
+        if price is None:
+            lynch_skip_reason = price_reason or "no price data available"
+        else:
+            lynch_years, lynch_years_reason = normalize_for_lynch(facts)
+            if not lynch_years:
+                lynch_skip_reason = lynch_years_reason
+            else:
+                lynch_metrics, lynch_skip_reason = compute_lynch_peg(lynch_years, price)
+
         results.append({
             "symbol": symbol,
             "sector": sector,
@@ -947,17 +1090,21 @@ def screen(tickers, refresh=False):
             "graham_signals": graham_signals,
             "graham_metrics": graham_metrics,
             "graham_skip_reason": graham_skip_reason,
+            "lynch_metrics": lynch_metrics,
+            "lynch_skip_reason": lynch_skip_reason,
         })
-        if fscore is None and mf_metrics is None and graham_score is None:
+        if fscore is None and mf_metrics is None and graham_score is None and lynch_metrics is None:
             errors.append((symbol, f_skip_reason or "unscoreable"))
         fscore_disp = f"F={fscore}/9" if fscore is not None else "F=n/a"
         mf_disp = (f"ROC={mf_metrics['roc']:.1%} EY={mf_metrics['earnings_yield']:.1%}"
                    if mf_metrics else "MF=n/a")
         graham_disp = f"G={graham_score}/7" if graham_score is not None else "G=n/a"
-        print(f"  [{i}/{len(tickers)}] {symbol:6s}  {fscore_disp}   {mf_disp}   {graham_disp}")
+        lynch_disp = f"PEG={lynch_metrics['peg']}" if lynch_metrics else "PEG=n/a"
+        print(f"  [{i}/{len(tickers)}] {symbol:6s}  {fscore_disp}   {mf_disp}   {graham_disp}   {lynch_disp}")
 
-    # Magic Formula rank is relative to the rest of the scored universe, so
-    # it's computed here, after every ticker's raw ROC/EY are in hand.
+    # Magic Formula and PEG ranks are relative to the rest of the scored
+    # universe, so they're computed here, after every ticker's raw metrics
+    # are in hand.
     mf_rows = [r for r in results if r["mf_metrics"] is not None]
     ey_rank = {r["symbol"]: i for i, r in enumerate(
         sorted(mf_rows, key=lambda r: r["mf_metrics"]["earnings_yield"], reverse=True), 1)}
@@ -970,18 +1117,25 @@ def screen(tickers, refresh=False):
     for rank, r in enumerate(mf_rows, 1):
         r["mf_metrics"]["magic_rank"] = rank
 
+    lynch_rows = [r for r in results if r["lynch_metrics"] is not None]
+    lynch_rows.sort(key=lambda r: (r["lynch_metrics"]["peg"], r["symbol"]))
+    for rank, r in enumerate(lynch_rows, 1):
+        r["lynch_metrics"]["peg_rank"] = rank
+
     results.sort(key=lambda r: (-(r["fscore"] if r["fscore"] is not None else -1), r["symbol"]))
 
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "models": ["piotroski_f_score", "magic_formula", "graham_defensive"],
+        "models": ["piotroski_f_score", "magic_formula", "graham_defensive", "lynch_peg"],
         "data_source": "sec_edgar_xbrl + yahoo_finance_price",
         "universe_size": len(tickers),
         "scored": sum(1 for r in results
-                      if r["fscore"] is not None or r["mf_metrics"] is not None or r["graham_score"] is not None),
+                      if r["fscore"] is not None or r["mf_metrics"] is not None
+                      or r["graham_score"] is not None or r["lynch_metrics"] is not None),
         "scored_f_score": sum(1 for r in results if r["fscore"] is not None),
         "scored_magic_formula": len(mf_rows),
         "scored_graham": sum(1 for r in results if r["graham_score"] is not None),
+        "scored_lynch": len(lynch_rows),
         "results": results,
     }
     with open(RESULTS_JSON, "w") as f:
@@ -1050,6 +1204,14 @@ def inspect_ticker(symbol):
             for name, val in signals.items():
                 print(f"    {val}  {name}")
             print(f"    metrics: {metrics}")
+
+    print("\n-- Peter Lynch PEG --")
+    lynch_years, lynch_years_reason = normalize_for_lynch(facts)
+    if not lynch_years:
+        print(f"not scored: {lynch_years_reason}")
+    else:
+        metrics, reason = compute_lynch_peg(lynch_years, price)
+        print(f"not scored: {reason}" if metrics is None else f"price={price}  {metrics}")
 
     conn.close()
 
@@ -1140,6 +1302,30 @@ def self_test_graham():
     print("PASS: all 7 signals fired and the total is 7. Graham scoring engine is correct.")
     return True
 
+def self_test_lynch():
+    """A hand-built 5-year company with EPS compounding at exactly 10%/year
+    (1.00 -> 1.4641), no network needed. Price is set so PE=8, giving
+    peg = 8 / 10 = 0.8 exactly ("attractive": 0.5 <= peg < 1.0)."""
+    eps_path = [1.4641, 1.331, 1.21, 1.10, 1.00]  # newest first, +10%/yr
+    years = [
+        {"date": f"{2025 - i}-12-31", "net_income": eps * 100, "shares": 100}
+        for i, eps in enumerate(eps_path)
+    ]
+    price = 8 * eps_path[0]  # PE = 8 exactly
+
+    metrics, reason = compute_lynch_peg(years, price)
+
+    print("\nSelf-test Peter Lynch PEG:")
+    print(f"  metrics: {metrics}")
+
+    assert metrics is not None, f"expected valid metrics, got reason={reason}"
+    assert abs(metrics["eps_growth"] - 0.10) < 0.001, f"growth mismatch: {metrics['eps_growth']}"
+    assert abs(metrics["pe"] - 8.0) < 0.01, f"PE mismatch: {metrics['pe']}"
+    assert abs(metrics["peg"] - 0.8) < 0.01, f"PEG mismatch: {metrics['peg']}"
+    assert metrics["rating"] == "attractive", f"rating mismatch: {metrics['rating']}"
+    print("PASS: Lynch PEG math is correct.")
+    return True
+
 # ----------------------------------------------------------------------------
 # CLI
 # ----------------------------------------------------------------------------
@@ -1157,6 +1343,7 @@ def main():
         self_test()
         self_test_magic_formula()
         self_test_graham()
+        self_test_lynch()
         return
 
     if args.inspect:
@@ -1194,9 +1381,19 @@ def main():
             print(f"  {r['symbol']:6s}  G=7/7  PE={m['pe']}  PB={m['pb']}  "
                   f"Graham#={m['graham_number']}   (as of {m['asof']})")
 
+    print(f"\n=== PETER LYNCH PEG (top 20) ===")
+    lynch_top = sorted(
+        (r for r in out["results"] if r["lynch_metrics"] is not None),
+        key=lambda r: r["lynch_metrics"]["peg_rank"],
+    )[:20]
+    for r in lynch_top:
+        m = r["lynch_metrics"]
+        print(f"  #{m['peg_rank']:<4d}{r['symbol']:6s}  PEG={m['peg']}  ({m['rating']}, "
+              f"PE={m['pe']} growth={m['eps_growth']:.1%})   (as of {m['asof']})")
+
     print(f"\nScored {out['scored']}/{out['universe_size']} "
           f"(F-Score: {out['scored_f_score']}, Magic Formula: {out['scored_magic_formula']}, "
-          f"Graham: {out['scored_graham']}). "
+          f"Graham: {out['scored_graham']}, Lynch PEG: {out['scored_lynch']}). "
           f"Wrote {RESULTS_JSON}. Skipped {len(errors)}.")
 
 if __name__ == "__main__":

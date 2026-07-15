@@ -165,6 +165,7 @@
           <button data-model="fscore" class="active">Piotroski F-Score</button>
           <button data-model="magic">Magic Formula</button>
           <button data-model="graham">Graham Defensive</button>
+          <button data-model="lynch">Lynch PEG</button>
         </div>
       </div>
       <p class="model-description" id="modelDescription"></p>
@@ -213,15 +214,17 @@ const MODEL_DESCRIPTIONS = {
   fscore: 'A 9-point checklist (Piotroski, 2000) that scores fundamentally improving companies across profitability, leverage/liquidity, and operating efficiency trends over 3 years — higher is stronger.',
   magic: '(Greenblatt) Ranks companies by combining quality (Return on Capital) and cheapness (Earnings Yield) to surface good businesses trading at good prices — rank #1 is best.',
   graham: '(Graham) A 7-point margin-of-safety checklist from The Intelligent Investor — size, balance-sheet strength, a multi-year earnings/dividend record, and a moderate price relative to earnings and book value — higher is stronger. Lookback windows are relaxed from Graham’s original 10yr/20yr to fit what SEC data supports.',
+  lynch: '(Lynch) Ranks companies by PEG Ratio — P/E divided by trailing EPS growth — "a fair price for the growth you\'re getting". PEG < 1 is attractive, < 0.5 excellent, by Lynch\'s own rule of thumb (shown as a rating, not a filter); rank #1 is the lowest PEG.',
 };
 
 // Min-score input behaves differently per model: F-Score and Graham are
-// additive point scores (filterable by a minimum), Magic Formula is an
-// ordinal rank across the universe with no natural "minimum" to set.
+// additive point scores (filterable by a minimum). Magic Formula and Lynch
+// PEG are ordinal ranks across the universe with no natural "minimum" to set.
 const MIN_SCORE_CONFIG = {
   fscore: { label: 'Min F-Score', max: 9, enabled: true },
   magic:  { label: 'Min Score (n/a)', max: 9, enabled: false },
   graham: { label: 'Min Graham Score', max: 7, enabled: true },
+  lynch:  { label: 'Min Score (n/a)', max: 9, enabled: false },
 };
 
 const COLUMNS = {
@@ -253,6 +256,16 @@ const COLUMNS = {
     { key: 'pe', label: 'P/E' },
     { key: 'pb', label: 'P/B' },
     { key: 'graham_number', label: 'Graham #' },
+    { key: 'asof', label: 'As Of' },
+  ],
+  lynch: [
+    { key: 'symbol', label: 'Symbol' },
+    { key: 'sector', label: 'Sector' },
+    { key: 'peg_rank', label: 'Rank' },
+    { key: 'peg', label: 'PEG' },
+    { key: 'rating', label: 'Rating' },
+    { key: 'lynch_pe', label: 'P/E' },
+    { key: 'lynch_eps_growth', label: 'EPS Growth' },
     { key: 'asof', label: 'As Of' },
   ],
 };
@@ -287,13 +300,21 @@ function rowValue(r, key) {
     case 'pe': return r.graham_metrics ? r.graham_metrics.pe : null;
     case 'pb': return r.graham_metrics ? r.graham_metrics.pb : null;
     case 'graham_number': return r.graham_metrics ? r.graham_metrics.graham_number : null;
+    case 'peg_rank': return r.lynch_metrics ? r.lynch_metrics.peg_rank : null;
+    case 'peg': return r.lynch_metrics ? r.lynch_metrics.peg : null;
+    case 'rating': return r.lynch_metrics ? r.lynch_metrics.rating : null;
+    case 'lynch_pe': return r.lynch_metrics ? r.lynch_metrics.pe : null;
+    case 'lynch_eps_growth': return r.lynch_metrics ? r.lynch_metrics.eps_growth : null;
     case 'asof':
       if (state.model === 'fscore') return r.f_metrics ? r.f_metrics.asof : null;
       if (state.model === 'graham') return r.graham_metrics ? r.graham_metrics.asof : null;
+      if (state.model === 'lynch') return r.lynch_metrics ? r.lynch_metrics.asof : null;
       return r.mf_metrics ? r.mf_metrics.asof : null;
     default: return null;
   }
 }
+
+const RATING_BADGE_CLASS = { excellent: 'strong', attractive: 'strong', fair: 'mid', expensive: 'weak' };
 
 function formatCell(key, v) {
   if (v === null || v === undefined) return { text: '—', cls: 'na' };
@@ -302,13 +323,16 @@ function formatCell(key, v) {
     case 'sector': return { text: v, cls: 'sector' };
     case 'fscore': return { html: scoreBadge(v, 9, 7, 4), cls: '' };
     case 'graham_score': return { html: scoreBadge(v, 7, 6, 4), cls: '' };
+    case 'rating': return { html: `<span class="badge ${RATING_BADGE_CLASS[v] || 'mid'}">${v}</span>`, cls: '' };
     case 'roa': case 'gross_margin': case 'leverage_ratio': case 'roc': case 'earnings_yield':
+    case 'lynch_eps_growth':
       return { text: fmtPct(v), cls: 'num' };
     case 'current_ratio': case 'graham_current_ratio': case 'pe': case 'pb': case 'graham_number':
+    case 'lynch_pe': case 'peg':
       return { text: fmtNum(v), cls: 'num' };
     case 'price': return { text: '$' + fmtNum(v), cls: 'num' };
     case 'market_cap': return { text: fmtMoney(v), cls: 'num' };
-    case 'magic_rank': return { text: '#' + v, cls: 'num' };
+    case 'magic_rank': case 'peg_rank': return { text: '#' + v, cls: 'num' };
     case 'asof': return { text: v, cls: 'num' };
     default: return { text: String(v), cls: '' };
   }
@@ -319,12 +343,13 @@ function scoreBadge(score, max, strongMin, midMin) {
   return `<span class="badge ${cls}">${score}/${max}</span>`;
 }
 
-const DEFAULT_SORT_KEY = { fscore: 'fscore', magic: 'magic_rank', graham: 'graham_score' };
+const DEFAULT_SORT_KEY = { fscore: 'fscore', magic: 'magic_rank', graham: 'graham_score', lynch: 'peg_rank' };
 
 function isScored(r) {
   if (state.model === 'fscore') return r.fscore !== null;
   if (state.model === 'magic') return !!r.mf_metrics;
   if (state.model === 'graham') return r.graham_score !== null;
+  if (state.model === 'lynch') return !!r.lynch_metrics;
   return false;
 }
 
@@ -332,6 +357,7 @@ function skipReasonFor(r) {
   if (state.model === 'fscore') return r.f_skip_reason;
   if (state.model === 'magic') return r.mf_skip_reason;
   if (state.model === 'graham') return r.graham_skip_reason;
+  if (state.model === 'lynch') return r.lynch_skip_reason;
   return null;
 }
 
@@ -380,7 +406,7 @@ function renderHead() {
         state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
       } else {
         state.sortKey = key;
-        state.sortDir = (key === 'magic_rank') ? 'asc' : 'desc';
+        state.sortDir = (key === 'magic_rank' || key === 'peg_rank') ? 'asc' : 'desc';
       }
       render();
     });
@@ -489,7 +515,19 @@ function renderDetail(r) {
       </ul></div>`;
   }
 
-  return `<div class="detail-grid">${fBlock}${mBlock}${gBlock}</div>`;
+  let lBlock = `<div class="detail-block"><h4>Peter Lynch PEG</h4><div style="color:var(--muted);font-size:0.8rem;">Not scored — ${r.lynch_skip_reason || 'unknown reason'}</div></div>`;
+  if (r.lynch_metrics) {
+    const m = r.lynch_metrics;
+    lBlock = `<div class="detail-block"><h4>Lynch PEG (rank #${m.peg_rank}, ${m.rating})</h4><ul class="metric-list">
+      <li><span>PEG Ratio</span><span class="v">${fmtNum(m.peg)}</span></li>
+      <li><span>P/E</span><span class="v">${fmtNum(m.pe)}</span></li>
+      <li><span>EPS growth (trailing)</span><span class="v">${fmtPct(m.eps_growth)}</span></li>
+      <li><span>EPS</span><span class="v">$${fmtNum(m.eps)}</span></li>
+      <li><span>Years checked</span><span class="v">${m.years_checked}</span></li>
+    </ul></div>`;
+  }
+
+  return `<div class="detail-grid">${fBlock}${mBlock}${gBlock}${lBlock}</div>`;
 }
 
 function renderSummary() {
@@ -500,6 +538,7 @@ function renderSummary() {
     <div class="summary-card"><div class="label">F-Score scored</div><div class="value">${d.scored_f_score}</div></div>
     <div class="summary-card"><div class="label">Magic Formula scored</div><div class="value">${d.scored_magic_formula}</div></div>
     <div class="summary-card"><div class="label">Graham scored</div><div class="value">${d.scored_graham}</div></div>
+    <div class="summary-card"><div class="label">Lynch PEG scored</div><div class="value">${d.scored_lynch}</div></div>
   `;
 }
 
@@ -537,7 +576,7 @@ async function init() {
   state.data = data;
 
   document.getElementById('hdrSubtitle').textContent =
-    `Piotroski F-Score + Greenblatt Magic Formula + Graham Defensive Investor — SEC EDGAR + Yahoo Finance`;
+    `Piotroski F-Score + Greenblatt Magic Formula + Graham Defensive Investor + Lynch PEG — SEC EDGAR + Yahoo Finance`;
   document.getElementById('hdrRight').textContent =
     `Generated ${new Date(data.generated_at).toLocaleString()}`;
   document.getElementById('footer').textContent =
@@ -551,7 +590,7 @@ async function init() {
     if (!btn) return;
     state.model = btn.dataset.model;
     state.sortKey = null;
-    state.sortDir = state.model === 'magic' ? 'asc' : 'desc';
+    state.sortDir = (state.model === 'magic' || state.model === 'lynch') ? 'asc' : 'desc';
     state.expanded = null;
     state.minScore = 0;
     document.getElementById('minScoreInput').value = 0;
