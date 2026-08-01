@@ -114,7 +114,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 # ----------------------------------------------------------------------------
 # CONFIG
@@ -234,12 +234,26 @@ XBRL_FIELD_SPECS = {
     ], "USD", False),
     # -- Magic Formula only, below --
     "ebit": (["OperatingIncomeLoss"], "USD", False),
-    "ppe_net": (["PropertyPlantAndEquipmentNet"], "USD", True),
+    "ppe_net": ([
+        "PropertyPlantAndEquipmentNet",
+        # Alphabet switched to this combined "PP&E + finance lease
+        # right-of-use asset" concept starting its Q2 2025 10-Q -- a real,
+        # deliberate ASC 842 accounting choice by the filer (not a tagging
+        # error), but it means the plain PropertyPlantAndEquipmentNet tag
+        # simply stops appearing in GOOG's facts from that quarter on.
+        "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization",
+    ], "USD", True),
     # Fallback source for ppe_net: some filers (e.g. GE Vernova) tag gross
     # PP&E and accumulated depreciation separately instead of a combined
     # "net" figure. Not in MAGIC_FORMULA_REQUIRED itself -- derived below.
-    "ppe_gross": (["PropertyPlantAndEquipmentGross"], "USD", True),
-    "accum_depreciation": (["AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment"], "USD", True),
+    "ppe_gross": ([
+        "PropertyPlantAndEquipmentGross",
+        "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetBeforeAccumulatedDepreciationAndAmortization",
+    ], "USD", True),
+    "accum_depreciation": ([
+        "AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+        "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAccumulatedDepreciationAndAmortization",
+    ], "USD", True),
     "cash": ([
         "CashAndCashEquivalentsAtCarryingValue",
         "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
@@ -301,6 +315,28 @@ GRAHAM_REQUIRED = [
 # and skip Magic Formula for that ticker rather than compute a garbage
 # market cap.
 MIN_PLAUSIBLE_SHARES = 1_000_000
+
+# Trailing-twelve-month (TTM) reconstruction, used only by Magic Formula and
+# Lynch PEG (see reconstruct_ttm() below for why F-Score and Graham stay
+# annual-only): those two models each look at only one "current" data point
+# rather than a multi-year trend, so refreshing that one point from the
+# latest 10-Q -- rather than waiting for the next 10-K -- is a clean fit.
+# TTM = last full fiscal year (10-K) + this year's year-to-date (10-Q)
+#       - the same year-to-date stretch a year ago (10-Q).
+TTM_PARTIAL_SPAN_MAX_DAYS = 349          # quarterly (~90d) up to 3-quarter YTD (~275d); 350+ is annual
+TTM_PARTIAL_SPAN_TOLERANCE_DAYS = 20     # how closely this year's and last year's YTD spans must match
+TTM_ANCHOR_SLACK_DAYS = 15               # slack when matching the anchor 10-K's end to the YTD window's start
+TTM_STALE_MAX_AGE_DAYS = 150             # a "quarterly" figure over ~5 months old isn't quarterly-fresh anymore
+# PP&E specifically: several large filers (HD, LIN, AMZN observed) only
+# re-disclose the granular net/gross/accumulated-depreciation breakdown
+# alongside their annual 10-K, not every 10-Q, even though every other
+# balance-sheet line (current assets/liab, cash) updates quarterly for the
+# same companies. Since PP&E moves slowly relative to earnings, using a
+# same-name-but-a-quarter-or-two-old PP&E figure alongside fresh EBIT/
+# current-assets/cash is still meaningfully more current than falling all
+# the way back to a full fiscal-year-old snapshot -- a deliberate, narrow
+# simplification, not a bug.
+TTM_PPE_SLACK_DAYS = 200
 
 # ----------------------------------------------------------------------------
 # CACHE LAYER (SQLite for per-company facts; a flat file for the ticker map)
@@ -492,15 +528,24 @@ def fetch_price(conn, symbol, refresh=False):
 # then intersect by fiscal-year-end date so the scoring function gets a
 # clean per-year dict without ever knowing an XBRL tag name existed.
 
-def extract_field(gaap, candidates, unit_key, instant):
-    """Merge every candidate tag's annual (10-K) data into one {end_date:
-    value} series. Companies sometimes switch which XBRL tag they use for
-    the same line item mid-history (e.g. LMT tagged revenue as
+def extract_field(gaap, candidates, unit_key, instant, forms=("10-K",)):
+    """Merge every candidate tag's annual data into one {end_date: value}
+    series. Companies sometimes switch which XBRL tag they use for the same
+    line item mid-history (e.g. LMT tagged revenue as
     RevenueFromContractWithCustomerExcludingAssessedTax through 2019, then
     switched to plain Revenues from 2020 on) -- stopping at the first
     non-empty candidate would silently drop the years under the other tag.
     Where two tags both cover the same date, the earlier-listed (preferred)
     candidate wins.
+
+    `forms` defaults to 10-K only (annual filings), matching every model
+    except Magic Formula/Lynch's TTM path, which passes ("10-K", "10-Q") for
+    *instant* (balance-sheet) fields so a fresher quarter-end snapshot can
+    win over the last 10-K's. Duration fields still only keep ~365-day
+    spans here regardless of `forms` -- 10-Qs rarely produce one by
+    accident, and the handful that could (a 52/53-week fiscal calendar
+    quirk) aren't worth the ambiguity; use extract_field_periods() instead
+    when a duration field's quarterly/YTD spans are wanted on purpose.
 
     Returns (list_of_tags_that_contributed_data, {end_date: value})."""
     matched_tags = []
@@ -516,7 +561,7 @@ def extract_field(gaap, candidates, unit_key, instant):
 
         found_any = False
         for e in entries:
-            if e.get("form") != "10-K":
+            if e.get("form") not in forms:
                 continue
             end = e.get("end")
             if not end:
@@ -540,6 +585,154 @@ def extract_field(gaap, candidates, unit_key, instant):
             matched_tags.append(tag)
 
     return matched_tags, {end: v for end, (_, _, v) in combined.items()}
+
+def extract_field_periods(gaap, candidates, unit_key, forms=("10-K", "10-Q")):
+    """Like extract_field(), but for duration facts headed into TTM
+    reconstruction: returns *every* distinct (start, end) period found
+    across the candidate tags, instead of collapsing to one value per
+    end-date. That collapsing is exactly what breaks for this purpose -- a
+    single 10-Q reports two overlapping periods ending on the same date
+    (e.g. Q3's own 3-month figure and the Jan-Sep 9-month year-to-date
+    figure both end September 30), and extract_field() keyed only on `end`
+    would silently discard one of them. Same candidate-tag preference and
+    filed-date tie-break as extract_field().
+
+    Returns {(start_date, end_date): value}."""
+    combined = {}   # (start, end) -> (candidate_rank, filed_date, value)
+    for rank, tag in enumerate(candidates):
+        node = gaap.get(tag)
+        if not node:
+            continue
+        entries = node.get("units", {}).get(unit_key)
+        if not entries:
+            continue
+        for e in entries:
+            if e.get("form") not in forms:
+                continue
+            start, end = e.get("start"), e.get("end")
+            if not start or not end:
+                continue
+            key = (start, end)
+            filed = e.get("filed", "")
+            prev = combined.get(key)
+            if prev is None or rank < prev[0] or (rank == prev[0] and filed >= prev[1]):
+                combined[key] = (rank, filed, e["val"])
+    return {key: v for key, (_, _, v) in combined.items()}
+
+def latest_period_value(periods):
+    """From an extract_field_periods() dict, the value for whichever period
+    ends most recently. Used for shares outstanding: we want the latest
+    reported figure (a 10-Q's 3-month or year-to-date weighted average),
+    not a TTM sum -- unlike income, a share count doesn't accumulate across
+    periods, so "most recent" is the right reduction, not "add them up".
+
+    Returns (value, end_date) or (None, None)."""
+    if not periods:
+        return None, None
+    key = max(periods, key=lambda k: k[1])
+    return periods[key], key[1]
+
+def value_asof(series, target_date, max_slack_days=10):
+    """From a {date: value} instant series (as returned by extract_field
+    for an instant field), the value exactly at target_date, or the
+    closest earlier date within max_slack_days if there's no exact match --
+    covers the rare case where a filing's balance-sheet "as of" date and
+    income-statement period-end date land a day or two apart."""
+    if target_date in series:
+        return series[target_date]
+    try:
+        target = date.fromisoformat(target_date)
+    except ValueError:
+        return None
+    candidates = []
+    for d, v in series.items():
+        try:
+            delta = (target - date.fromisoformat(d)).days
+        except ValueError:
+            continue
+        if 0 <= delta <= max_slack_days:
+            candidates.append((d, v))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda dv: dv[0])[1]
+
+def _span_days(start, end):
+    try:
+        return (date.fromisoformat(end) - date.fromisoformat(start)).days
+    except (ValueError, TypeError):
+        return None
+
+def reconstruct_ttm(periods):
+    """`periods` = {(start,end): value} from extract_field_periods(), for
+    one duration field (net_income or ebit). Reconstructs a trailing-
+    twelve-month figure anchored on the most recently ended 10-Q period:
+
+        TTM = last full fiscal year (10-K)
+              + this year's year-to-date figure (10-Q)
+              - the same year-to-date stretch a year ago (10-Q)
+
+    This is the standard way to turn quarterly filings into a rolling
+    annual figure without needing a single discrete quarter's number --
+    10-Qs report cumulative year-to-date for Q2/Q3 (not a standalone
+    quarter), so differencing two aligned YTD points is the robust
+    approach rather than trying to isolate one quarter by subtraction
+    within a single filing (which breaks the moment a company's own
+    year-to-date tagging is inconsistent).
+
+    Returns (value, asof_date, reason); reason is None on success and a
+    human-readable explanation of what's missing otherwise."""
+    if not periods:
+        return None, None, "no data"
+
+    annual, partial = {}, {}
+    for (start, end), val in periods.items():
+        span = _span_days(start, end)
+        if span is None:
+            continue
+        if 350 <= span <= 380:
+            annual[(start, end)] = val
+        elif 0 < span <= TTM_PARTIAL_SPAN_MAX_DAYS:
+            partial[(start, end)] = val
+
+    if not partial:
+        return None, None, "no 10-Q period found (no partial-year data)"
+
+    latest_key = max(partial, key=lambda k: k[1])
+    latest_start, latest_end = latest_key
+    latest_val = partial[latest_key]
+    latest_span = _span_days(latest_start, latest_end)
+
+    age_days = (date.today() - date.fromisoformat(latest_end)).days
+    if age_days > TTM_STALE_MAX_AGE_DAYS:
+        return None, None, f"latest 10-Q period ({latest_end}) is more than {TTM_STALE_MAX_AGE_DAYS} days old"
+
+    prior_candidates = []
+    for (start, end), val in partial.items():
+        if (start, end) == latest_key:
+            continue
+        span = _span_days(start, end)
+        if span is None or abs(span - latest_span) > TTM_PARTIAL_SPAN_TOLERANCE_DAYS:
+            continue
+        gap_days = (date.fromisoformat(latest_end) - date.fromisoformat(end)).days
+        if 340 <= gap_days <= 390:
+            prior_candidates.append(((start, end), val, abs(gap_days - 365)))
+    if not prior_candidates:
+        return None, None, "no matching year-ago quarterly period to difference against"
+    _, prior_val, _ = min(prior_candidates, key=lambda t: t[2])
+
+    annual_candidates = []
+    for (start, end), val in annual.items():
+        gap_days = (date.fromisoformat(latest_start) - date.fromisoformat(end)).days
+        if gap_days >= -TTM_ANCHOR_SLACK_DAYS:
+            annual_candidates.append((val, end, gap_days))
+    if not annual_candidates:
+        return None, None, "no completed fiscal year (10-K) precedes the latest 10-Q period"
+    annual_val, annual_end, anchor_gap = max(annual_candidates, key=lambda t: t[1])
+    if anchor_gap > 400:
+        return None, None, f"most recent 10-K ({annual_end}) is too far before the latest 10-Q period to anchor a TTM figure"
+
+    ttm_value = annual_val + latest_val - prior_val
+    return ttm_value, latest_end, None
 
 def normalize_from_facts(facts):
     """Return (years, reason). `years` is a list of yearly dicts, newest
@@ -593,14 +786,81 @@ def normalize_from_facts(facts):
         })
     return years, None
 
+def _ttm_snapshot_for_magic_formula(gaap):
+    """Try to assemble a trailing-twelve-month snapshot for Magic Formula
+    from the latest 10-Q (see reconstruct_ttm() for the TTM formula).
+    Returns a year-shaped dict on success, or None if a clean TTM can't be
+    put together (no recent 10-Q, mismatched quarterly history, a missing
+    balance-sheet field at the anchor date, etc.) -- the caller falls back
+    to the prior fiscal-year-only approach on None, so this never trades
+    away existing coverage."""
+    ebit_periods = extract_field_periods(gaap, XBRL_FIELD_SPECS["ebit"][0], "USD")
+    ttm_ebit, ttm_asof, _reason = reconstruct_ttm(ebit_periods)
+    if ttm_ebit is None:
+        return None
+
+    instant_fields = ["current_assets", "current_liab", "long_term_debt",
+                       "current_debt", "cash", "ppe_net", "ppe_gross", "accum_depreciation"]
+    instant_series = {}
+    for field in instant_fields:
+        candidates, unit_key, instant = XBRL_FIELD_SPECS[field]
+        _, values = extract_field(gaap, candidates, unit_key, instant, forms=("10-K", "10-Q"))
+        instant_series[field] = values
+
+    current_assets = value_asof(instant_series["current_assets"], ttm_asof)
+    current_liab = value_asof(instant_series["current_liab"], ttm_asof)
+    cash = value_asof(instant_series["cash"], ttm_asof)
+    ppe_net = value_asof(instant_series["ppe_net"], ttm_asof, max_slack_days=TTM_PPE_SLACK_DAYS)
+    if ppe_net is None:
+        gross = value_asof(instant_series["ppe_gross"], ttm_asof, max_slack_days=TTM_PPE_SLACK_DAYS)
+        accum = value_asof(instant_series["accum_depreciation"], ttm_asof, max_slack_days=TTM_PPE_SLACK_DAYS)
+        if gross is not None and accum is not None:
+            ppe_net = gross - accum
+    long_term_debt = value_asof(instant_series["long_term_debt"], ttm_asof) or 0
+    current_debt = value_asof(instant_series["current_debt"], ttm_asof) or 0
+
+    if current_assets is None or current_liab is None or cash is None or ppe_net is None:
+        return None
+
+    shares_val, shares_end = latest_period_value(
+        extract_field_periods(gaap, XBRL_FIELD_SPECS["shares"][0], "shares"))
+    if shares_val is None or shares_end is None:
+        return None
+    if abs((date.fromisoformat(shares_end) - date.fromisoformat(ttm_asof)).days) > 100:
+        return None   # shares figure isn't from around the same reporting period as the TTM anchor
+
+    return {
+        "date": ttm_asof,
+        "ebit": ttm_ebit,
+        "current_assets": current_assets,
+        "current_liab": current_liab,
+        "long_term_debt": long_term_debt,
+        "current_debt": current_debt,
+        "cash": cash,
+        "ppe_net": ppe_net,
+        "shares": shares_val,
+    }
+
 def normalize_for_magic_formula(facts):
-    """Return (year, reason). `year` is the single most recent fiscal-year
-    dict with everything Magic Formula needs, or None; `reason` is None on
-    success or a human-readable explanation otherwise. Unlike F-Score this
-    only looks at the latest year -- Magic Formula is a point-in-time
-    cheapness/quality ranking, not a multi-year trend, so there's no
-    3-year requirement here."""
+    """Return (year, reason, basis). `year` is the single most recent
+    snapshot dict with everything Magic Formula needs, or None; `reason` is
+    None on success or a human-readable explanation otherwise; `basis` is
+    "TTM" when reconstructed from a recent 10-Q (see
+    _ttm_snapshot_for_magic_formula(), tried first since it's the freshest
+    available data) or "FY" when it falls back to the last full fiscal year
+    from a 10-K, same behavior as before 10-Q support existed -- the fallback
+    covers filers with no recent 10-Q (e.g. foreign private issuers that
+    file 20-F/6-K instead) or whose quarterly history doesn't cleanly
+    reconstruct. Unlike F-Score this only looks at the latest data point --
+    Magic Formula is a point-in-time cheapness/quality ranking, not a
+    multi-year trend, so there's no 3-year requirement here."""
     gaap = facts.get("facts", {}).get("us-gaap", {})
+
+    ttm_year = _ttm_snapshot_for_magic_formula(gaap)
+    if ttm_year is not None:
+        if ttm_year["shares"] < MIN_PLAUSIBLE_SHARES:
+            return None, "implausible share count (likely a filer tagging error, e.g. shares reported in millions)", None
+        return ttm_year, None, "TTM"
 
     series = {}
     for field in MAGIC_FORMULA_FIELDS:
@@ -619,13 +879,13 @@ def normalize_for_magic_formula(facts):
 
     missing = [f for f in MAGIC_FORMULA_REQUIRED if not series[f]]
     if missing:
-        return None, f"filer never reports: {', '.join(missing)}"
+        return None, f"filer never reports: {', '.join(missing)}", None
 
     common_dates = set(series[MAGIC_FORMULA_REQUIRED[0]])
     for f in MAGIC_FORMULA_REQUIRED[1:]:
         common_dates &= set(series[f])
     if not common_dates:
-        return None, "no single fiscal year has every required field reported together"
+        return None, "no single fiscal year has every required field reported together", None
     d = max(common_dates)
 
     try:
@@ -633,10 +893,10 @@ def normalize_for_magic_formula(facts):
     except ValueError:
         age_days = None
     if age_days is not None and age_days > STALE_DATA_MAX_AGE_DAYS:
-        return None, f"most recent complete year ({d}) is more than {STALE_DATA_MAX_AGE_DAYS} days old"
+        return None, f"most recent complete year ({d}) is more than {STALE_DATA_MAX_AGE_DAYS} days old", None
 
     if series["shares"][d] < MIN_PLAUSIBLE_SHARES:
-        return None, "implausible share count (likely a filer tagging error, e.g. shares reported in millions)"
+        return None, "implausible share count (likely a filer tagging error, e.g. shares reported in millions)", None
 
     return {
         "date":            d,
@@ -648,7 +908,7 @@ def normalize_for_magic_formula(facts):
         "cash":            series["cash"][d],
         "ppe_net":         series["ppe_net"][d],
         "shares":          series["shares"][d],
-    }, None
+    }, None, "FY"
 
 def normalize_for_graham(facts):
     """Return (years, reason). `years` is up to GRAHAM_EARNINGS_YEARS yearly
@@ -704,14 +964,52 @@ def normalize_for_graham(facts):
 
     return years, None
 
+def _ttm_snapshot_for_lynch(gaap):
+    """Try to assemble a Lynch PEG growth window whose most recent point is
+    a trailing-twelve-month EPS figure reconstructed from the latest 10-Q,
+    with the remaining LYNCH_GROWTH_YEARS-1 points filled in from annual
+    10-K history (only the current point needs to be quarterly-fresh -- the
+    growth-rate anchor further back doesn't). Returns a years list (newest
+    first) or None if a clean TTM point can't be assembled, in which case
+    the caller falls back to the prior pure-FY window."""
+    ni_candidates, ni_unit, _ = XBRL_FIELD_SPECS["net_income"]
+    ni_periods = extract_field_periods(gaap, ni_candidates, ni_unit)
+    ttm_ni, ttm_asof, _reason = reconstruct_ttm(ni_periods)
+    if ttm_ni is None:
+        return None
+
+    sh_candidates, sh_unit, _ = XBRL_FIELD_SPECS["shares"]
+    shares_val, shares_end = latest_period_value(extract_field_periods(gaap, sh_candidates, sh_unit))
+    if shares_val is None or shares_end is None:
+        return None
+    if abs((date.fromisoformat(shares_end) - date.fromisoformat(ttm_asof)).days) > 100:
+        return None
+
+    _, annual_ni = extract_field(gaap, ni_candidates, ni_unit, False)
+    _, annual_sh = extract_field(gaap, sh_candidates, sh_unit, False)
+    annual_common = sorted(set(annual_ni) & set(annual_sh), reverse=True)
+    older_years = [d for d in annual_common if d < ttm_asof][:LYNCH_GROWTH_YEARS - 1]
+    if len(older_years) < LYNCH_GROWTH_YEARS - 1:
+        return None
+
+    years = [{"date": ttm_asof, "net_income": ttm_ni, "shares": shares_val}]
+    years += [{"date": d, "net_income": annual_ni[d], "shares": annual_sh[d]} for d in older_years]
+    return years
+
 def normalize_for_lynch(facts):
-    """Return (years, reason). `years` is up to LYNCH_GROWTH_YEARS yearly
-    {date, net_income, shares} dicts, newest first, for PEG's trailing EPS
-    growth rate; `reason` is None on success (a full window) or a human-
-    readable explanation otherwise. Deliberately reuses only net_income and
-    shares -- both already fetched for every other model -- so this adds no
-    new XBRL fields and no new network calls."""
+    """Return (years, reason, basis). `years` is up to LYNCH_GROWTH_YEARS
+    yearly {date, net_income, shares} dicts, newest first, for PEG's
+    trailing EPS growth rate; `reason` is None on success (a full window) or
+    a human-readable explanation otherwise; `basis` is "TTM" when the most
+    recent point is a trailing-twelve-month figure reconstructed from the
+    latest 10-Q (see _ttm_snapshot_for_lynch(), tried first) or "FY" when it
+    falls back to the prior all-annual window -- same behavior as before
+    10-Q support existed."""
     gaap = facts.get("facts", {}).get("us-gaap", {})
+
+    ttm_years = _ttm_snapshot_for_lynch(gaap)
+    if ttm_years is not None and not any(y["shares"] < MIN_PLAUSIBLE_SHARES for y in ttm_years):
+        return ttm_years, None, "TTM"
 
     ni_candidates, ni_unit, ni_instant = XBRL_FIELD_SPECS["net_income"]
     sh_candidates, sh_unit, sh_instant = XBRL_FIELD_SPECS["shares"]
@@ -721,7 +1019,7 @@ def normalize_for_lynch(facts):
     common_dates = sorted(set(net_income) & set(shares), reverse=True)[:LYNCH_GROWTH_YEARS]
     if len(common_dates) < LYNCH_GROWTH_YEARS:
         return [], (f"only {len(common_dates)} fiscal year(s) of clean EPS history available "
-                     f"(need {LYNCH_GROWTH_YEARS})")
+                     f"(need {LYNCH_GROWTH_YEARS})"), None
 
     # A filer can switch which net_income tag it uses (e.g. Booking Holdings
     # stopped tagging plain NetIncomeLoss in its 10-Ks after 2015), which
@@ -734,15 +1032,15 @@ def normalize_for_lynch(facts):
         age_days = None
     if age_days is not None and age_days > STALE_DATA_MAX_AGE_DAYS:
         return [], (f"most recent overlapping net_income/shares year ({common_dates[0]}) is more "
-                     f"than {STALE_DATA_MAX_AGE_DAYS} days old -- likely a filer tag change, not a real gap")
+                     f"than {STALE_DATA_MAX_AGE_DAYS} days old -- likely a filer tag change, not a real gap"), None
 
     years = [{"date": d, "net_income": net_income[d], "shares": shares[d]} for d in common_dates]
 
     # Same MIN_PLAUSIBLE_SHARES filer-tagging bug as Magic Formula/Graham.
     if any(y["shares"] < MIN_PLAUSIBLE_SHARES for y in years):
-        return [], "implausible share count in one or more years (likely a filer tagging error)"
+        return [], "implausible share count in one or more years (likely a filer tagging error)", None
 
-    return years, None
+    return years, None, "FY"
 
 # ----------------------------------------------------------------------------
 # THE MODEL: Piotroski F-Score  (pure function -- no network, easy to test)
@@ -1049,11 +1347,13 @@ def screen(tickers, refresh=False):
         elif price is None:
             mf_skip_reason = price_reason or "no price data available"
         else:
-            mf_year, mf_year_reason = normalize_for_magic_formula(facts)
+            mf_year, mf_year_reason, mf_basis = normalize_for_magic_formula(facts)
             if mf_year is None:
                 mf_skip_reason = mf_year_reason
             else:
                 mf_metrics, mf_skip_reason = compute_magic_formula_raw(mf_year, price)
+                if mf_metrics is not None:
+                    mf_metrics["basis"] = mf_basis
 
         graham_score, graham_signals, graham_metrics, graham_skip_reason = None, None, None, None
         if price is None:
@@ -1070,11 +1370,13 @@ def screen(tickers, refresh=False):
         if price is None:
             lynch_skip_reason = price_reason or "no price data available"
         else:
-            lynch_years, lynch_years_reason = normalize_for_lynch(facts)
+            lynch_years, lynch_years_reason, lynch_basis = normalize_for_lynch(facts)
             if not lynch_years:
                 lynch_skip_reason = lynch_years_reason
             else:
                 lynch_metrics, lynch_skip_reason = compute_lynch_peg(lynch_years, price)
+                if lynch_metrics is not None:
+                    lynch_metrics["basis"] = lynch_basis
 
         results.append({
             "symbol": symbol,
@@ -1127,6 +1429,11 @@ def screen(tickers, refresh=False):
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "models": ["piotroski_f_score", "magic_formula", "graham_defensive", "lynch_peg"],
+        # Magic Formula and Lynch PEG refresh from the latest 10-Q (TTM) when
+        # one cleanly reconstructs, falling back to the last 10-K (FY)
+        # otherwise -- see reconstruct_ttm(). F-Score and Graham are
+        # multi-year checklists and stay purely annual (10-K only).
+        "quarterly_models": ["magic_formula", "lynch_peg"],
         "data_source": "sec_edgar_xbrl + yahoo_finance_price",
         "universe_size": len(tickers),
         "scored": sum(1 for r in results
@@ -1134,8 +1441,10 @@ def screen(tickers, refresh=False):
                       or r["graham_score"] is not None or r["lynch_metrics"] is not None),
         "scored_f_score": sum(1 for r in results if r["fscore"] is not None),
         "scored_magic_formula": len(mf_rows),
+        "scored_magic_formula_ttm": sum(1 for r in mf_rows if r["mf_metrics"]["basis"] == "TTM"),
         "scored_graham": sum(1 for r in results if r["graham_score"] is not None),
         "scored_lynch": len(lynch_rows),
+        "scored_lynch_ttm": sum(1 for r in lynch_rows if r["lynch_metrics"]["basis"] == "TTM"),
         "results": results,
     }
     with open(RESULTS_JSON, "w") as f:
@@ -1184,12 +1493,16 @@ def inspect_ticker(symbol):
         return
 
     print("\n-- Magic Formula --")
-    mf_year, mf_reason = normalize_for_magic_formula(facts)
+    mf_year, mf_reason, mf_basis = normalize_for_magic_formula(facts)
     if mf_year is None:
         print(f"not scored: {mf_reason}")
     else:
         metrics, reason = compute_magic_formula_raw(mf_year, price)
-        print(f"not scored: {reason}" if metrics is None else f"price={price}  {metrics}")
+        if metrics is None:
+            print(f"not scored: {reason}")
+        else:
+            metrics["basis"] = mf_basis
+            print(f"price={price}  basis={mf_basis}  {metrics}")
 
     print("\n-- Graham Defensive Investor --")
     graham_years, graham_years_reason = normalize_for_graham(facts)
@@ -1206,12 +1519,16 @@ def inspect_ticker(symbol):
             print(f"    metrics: {metrics}")
 
     print("\n-- Peter Lynch PEG --")
-    lynch_years, lynch_years_reason = normalize_for_lynch(facts)
+    lynch_years, lynch_years_reason, lynch_basis = normalize_for_lynch(facts)
     if not lynch_years:
         print(f"not scored: {lynch_years_reason}")
     else:
         metrics, reason = compute_lynch_peg(lynch_years, price)
-        print(f"not scored: {reason}" if metrics is None else f"price={price}  {metrics}")
+        if metrics is None:
+            print(f"not scored: {reason}")
+        else:
+            metrics["basis"] = lynch_basis
+            print(f"price={price}  basis={lynch_basis}  {metrics}")
 
     conn.close()
 
@@ -1302,6 +1619,47 @@ def self_test_graham():
     print("PASS: all 7 signals fired and the total is 7. Graham scoring engine is correct.")
     return True
 
+def self_test_ttm_reconstruction():
+    """Hand-built period data (no network), proving the TTM formula itself:
+        TTM = last full fiscal year + this year's year-to-date
+              - the same year-to-date stretch a year ago.
+    Dates are relative to today so this stays valid whenever it's run
+    (the "latest" period must be recent or reconstruct_ttm's staleness
+    guard rejects it)."""
+    latest_end   = date.today() - timedelta(days=30)     # a fresh quarter-end -- anchors the TTM
+    latest_start = latest_end - timedelta(days=274)        # ~9-month year-to-date span
+    prior_end    = latest_end - timedelta(days=365)        # same stretch, one year earlier
+    prior_start  = prior_end - timedelta(days=274)
+    fy_end       = latest_start - timedelta(days=1)        # last full fiscal year, ending right
+    fy_start     = fy_end - timedelta(days=364)             # before the year-to-date periods began
+
+    periods = {
+        (fy_start.isoformat(), fy_end.isoformat()): 400.0,          # last full fiscal year (10-K)
+        (prior_start.isoformat(), prior_end.isoformat()): 280.0,    # year-ago YTD (10-Q)
+        (latest_start.isoformat(), latest_end.isoformat()): 340.0,  # latest YTD (10-Q) -- anchor
+    }
+    value, asof, reason = reconstruct_ttm(periods)
+
+    print("\nSelf-test TTM reconstruction:")
+    print(f"  value={value}  asof={asof}  reason={reason}")
+
+    assert value == 460, f"expected 460 (400 + 340 - 280), got {value}"
+    assert asof == latest_end.isoformat(), f"expected asof {latest_end.isoformat()}, got {asof}"
+    assert reason is None
+    print("PASS: TTM reconstruction math is correct.")
+
+    # A stale "latest" period (well past TTM_STALE_MAX_AGE_DAYS) should be
+    # rejected rather than silently used.
+    stale_end = date.today() - timedelta(days=TTM_STALE_MAX_AGE_DAYS + 30)
+    stale_start = stale_end - timedelta(days=274)
+    stale_periods = dict(periods)
+    del stale_periods[(latest_start.isoformat(), latest_end.isoformat())]
+    stale_periods[(stale_start.isoformat(), stale_end.isoformat())] = 340.0
+    value, asof, reason = reconstruct_ttm(stale_periods)
+    assert value is None and reason is not None, "a stale latest period should be rejected, not scored"
+    print("PASS: a stale latest 10-Q period is correctly rejected.")
+    return True
+
 def self_test_lynch():
     """A hand-built 5-year company with EPS compounding at exactly 10%/year
     (1.00 -> 1.4641), no network needed. Price is set so PE=8, giving
@@ -1344,6 +1702,7 @@ def main():
         self_test_magic_formula()
         self_test_graham()
         self_test_lynch()
+        self_test_ttm_reconstruction()
         return
 
     if args.inspect:
@@ -1372,7 +1731,7 @@ def main():
     for r in mf_top:
         m = r["mf_metrics"]
         print(f"  #{m['magic_rank']:<4d}{r['symbol']:6s}  ROC={m['roc']:.1%}  EY={m['earnings_yield']:.1%}"
-              f"   (as of {m['asof']})")
+              f"   (as of {m['asof']}, {m['basis']})")
 
     print(f"\n=== GRAHAM DEFENSIVE INVESTOR (score 7/7) ===")
     for r in out["results"]:
@@ -1389,11 +1748,15 @@ def main():
     for r in lynch_top:
         m = r["lynch_metrics"]
         print(f"  #{m['peg_rank']:<4d}{r['symbol']:6s}  PEG={m['peg']}  ({m['rating']}, "
-              f"PE={m['pe']} growth={m['eps_growth']:.1%})   (as of {m['asof']})")
+              f"PE={m['pe']} growth={m['eps_growth']:.1%})   (as of {m['asof']}, {m['basis']})")
 
     print(f"\nScored {out['scored']}/{out['universe_size']} "
-          f"(F-Score: {out['scored_f_score']}, Magic Formula: {out['scored_magic_formula']}, "
-          f"Graham: {out['scored_graham']}, Lynch PEG: {out['scored_lynch']}). "
+          f"(F-Score: {out['scored_f_score']}, "
+          f"Magic Formula: {out['scored_magic_formula']} [{out['scored_magic_formula_ttm']} TTM / "
+          f"{out['scored_magic_formula'] - out['scored_magic_formula_ttm']} FY], "
+          f"Graham: {out['scored_graham']}, "
+          f"Lynch PEG: {out['scored_lynch']} [{out['scored_lynch_ttm']} TTM / "
+          f"{out['scored_lynch'] - out['scored_lynch_ttm']} FY]). "
           f"Wrote {RESULTS_JSON}. Skipped {len(errors)}.")
 
 if __name__ == "__main__":

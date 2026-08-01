@@ -62,6 +62,12 @@
   }
   .model-section { padding-bottom: 14px; border-bottom: 1px solid var(--border); }
   .model-description { margin-top: 8px; font-size: 0.8rem; color: var(--muted); max-width: 640px; line-height: 1.4; }
+  .cadence-badge {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+    padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700;
+  }
+  .cadence-badge.quarterly { background: #dbeafe; color: #1d4ed8; }
+  .cadence-badge.annual    { background: #f1f5f9; color: #475569; }
   .filter-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
   .filter-row .clear-btn { margin-left: auto; }
   .sector-row { width: 100%; }
@@ -148,6 +154,13 @@
   .badge.mid    { background: #fef3c7; color: #b45309; }
   .badge.weak   { background: #fee2e2; color: #b91c1c; }
 
+  .basis-tag {
+    display: inline-block; padding: 2px 7px; border-radius: 8px;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.02em; cursor: help;
+  }
+  .basis-tag.ttm { background: #dbeafe; color: #1d4ed8; }
+  .basis-tag.fy  { background: #f1f5f9; color: #64748b; }
+
   .detail-row td { background: #f8fafc; padding: 14px 20px; cursor: default; white-space: normal; }
   .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
   .detail-block h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
@@ -189,6 +202,7 @@
         </div>
       </div>
       <p class="model-description" id="modelDescription"></p>
+      <span class="cadence-badge" id="modelCadence"></span>
     </div>
     <div class="filter-row">
       <div class="control-group">
@@ -242,6 +256,19 @@ const MODEL_DESCRIPTIONS = {
   lynch: '(Lynch) Ranks companies by PEG Ratio — P/E divided by trailing EPS growth — "a fair price for the growth you\'re getting". PEG < 1 is attractive, < 0.5 excellent, by Lynch\'s own rule of thumb (shown as a rating, not a filter); rank #1 is the lowest PEG.',
 };
 
+// Magic Formula and Lynch PEG each look at a single "current" data point
+// (not a multi-year trend), so they refresh it from each company's latest
+// 10-Q using a trailing-twelve-month reconstruction whenever one cleanly
+// assembles -- falling back to the last 10-K's fiscal year otherwise (see
+// each row's Basis column/detail panel for which applied). F-Score and
+// Graham are multi-year checklists and only ever use annual 10-K data.
+const MODEL_CADENCE = {
+  fscore: { cls: 'annual',  label: 'Updated annually — refreshes with each new 10-K' },
+  magic:  { cls: 'quarterly', label: 'Updated quarterly — refreshes from each company’s latest 10-Q (TTM)' },
+  graham: { cls: 'annual',  label: 'Updated annually — refreshes with each new 10-K' },
+  lynch:  { cls: 'quarterly', label: 'Updated quarterly — refreshes from each company’s latest 10-Q (TTM)' },
+};
+
 // Min-score input behaves differently per model: F-Score and Graham are
 // additive point scores (filterable by a minimum). Magic Formula and Lynch
 // PEG are ordinal ranks across the universe with no natural "minimum" to set.
@@ -272,6 +299,7 @@ const COLUMNS = {
     { key: 'price', label: 'Price' },
     { key: 'market_cap', label: 'Market Cap' },
     { key: 'asof', label: 'As Of' },
+    { key: 'basis', label: 'Basis' },
   ],
   graham: [
     { key: 'symbol', label: 'Symbol' },
@@ -292,6 +320,7 @@ const COLUMNS = {
     { key: 'lynch_pe', label: 'P/E' },
     { key: 'lynch_eps_growth', label: 'EPS Growth' },
     { key: 'asof', label: 'As Of' },
+    { key: 'basis', label: 'Basis' },
   ],
 };
 
@@ -335,6 +364,10 @@ function rowValue(r, key) {
       if (state.model === 'graham') return r.graham_metrics ? r.graham_metrics.asof : null;
       if (state.model === 'lynch') return r.lynch_metrics ? r.lynch_metrics.asof : null;
       return r.mf_metrics ? r.mf_metrics.asof : null;
+    case 'basis':
+      if (state.model === 'lynch') return r.lynch_metrics ? r.lynch_metrics.basis : null;
+      if (state.model === 'magic') return r.mf_metrics ? r.mf_metrics.basis : null;
+      return null;
     default: return null;
   }
 }
@@ -349,6 +382,8 @@ function formatCell(key, v) {
     case 'fscore': return { html: scoreBadge(v, 9, 7, 4), cls: '' };
     case 'graham_score': return { html: scoreBadge(v, 7, 6, 4), cls: '' };
     case 'rating': return { html: `<span class="badge ${RATING_BADGE_CLASS[v] || 'mid'}">${v}</span>`, cls: '' };
+    case 'basis':
+      return { html: `<span class="basis-tag ${v === 'TTM' ? 'ttm' : 'fy'}" title="${v === 'TTM' ? 'Trailing twelve months, reconstructed from the latest 10-Q' : 'Last full fiscal year from the most recent 10-K (no clean quarterly reconstruction available for this company)'}">${v}</span>`, cls: '' };
     case 'roa': case 'gross_margin': case 'leverage_ratio': case 'roc': case 'earnings_yield':
     case 'lynch_eps_growth':
       return { text: fmtPct(v), cls: 'num' };
@@ -521,6 +556,7 @@ function renderDetail(r) {
       <li><span>Market cap</span><span class="v">${fmtMoney(m.market_cap)}</span></li>
       <li><span>Enterprise value</span><span class="v">${fmtMoney(m.enterprise_value)}</span></li>
       <li><span>Price</span><span class="v">$${fmtNum(m.price)}</span></li>
+      <li><span>Data basis</span><span class="v">${m.basis === 'TTM' ? 'Trailing 12mo (latest 10-Q)' : 'Fiscal year (latest 10-K)'} as of ${m.asof}</span></li>
     </ul></div>`;
   }
 
@@ -549,6 +585,7 @@ function renderDetail(r) {
       <li><span>EPS growth (trailing)</span><span class="v">${fmtPct(m.eps_growth)}</span></li>
       <li><span>EPS</span><span class="v">$${fmtNum(m.eps)}</span></li>
       <li><span>Years checked</span><span class="v">${m.years_checked}</span></li>
+      <li><span>Data basis</span><span class="v">${m.basis === 'TTM' ? 'Trailing 12mo (latest 10-Q)' : 'Fiscal year (latest 10-K)'} as of ${m.asof}</span></li>
     </ul></div>`;
   }
 
@@ -569,6 +606,10 @@ function renderSummary() {
 
 function renderModelDescription() {
   document.getElementById('modelDescription').textContent = MODEL_DESCRIPTIONS[state.model];
+  const cadence = MODEL_CADENCE[state.model];
+  const badge = document.getElementById('modelCadence');
+  badge.className = `cadence-badge ${cadence.cls}`;
+  badge.textContent = (cadence.cls === 'quarterly' ? '⟳ ' : '📅 ') + cadence.label;
 }
 
 function renderSectorChips() {
